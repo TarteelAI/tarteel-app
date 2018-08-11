@@ -1,8 +1,7 @@
 import React from "react"
 import { connect }  from "react-redux"
-import { View, Text, TouchableWithoutFeedback } from "react-native"
+import { View, Text, TouchableWithoutFeedback, Image } from "react-native"
 import { Actions } from "react-native-router-flux"
-import Image from "react-native-remote-svg"
 
 import Button from "../Button"
 import StatusBar from "../StatusBar"
