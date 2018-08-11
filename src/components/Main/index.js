@@ -1,19 +1,28 @@
 import React from "react"
-import { StyleSheet, View, Text, Animated, Easing } from "react-native";
+import { View, Text, Animated, Easing, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
 import Expo from "expo"
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
-import { secondsToTime } from "../../utils/timeConverter"
+import { MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
+import { connect }  from "react-redux"
+import { Actions } from "react-native-router-flux"
+import Image from "react-native-remote-svg"
+// import { ajax } from "jquery"
 
 import Button from "../Button/index"
 import Navbar from "../Navbar";
-import NavbarStyles, { MenuButton } from "../Navbar/styles"
+import NavbarStyles  from "../Navbar/styles"
 import StatusBar from "../StatusBar";
-import Footer from "../Footer";
-import AudioPlayer from "../AudioPlayer";
 import Loader from "../Loader"
+import Snackbar from '../SnackBar'
+import Steps from "../Steps"
+import RecordingButton from "../RecordingButton"
 
-export default class Main extends React.Component {
+import { increaseRecords, setRecords, setLastDate } from "../../store/actions/records"
+import { increaseAyahs } from "../../store/actions/ayahs"
+import showError from "../../utils/showError"
+
+import styles from "./styles"
+
+class Main extends React.Component {
   state = {
     status: {
       isRecording: false,
@@ -27,7 +36,7 @@ export default class Main extends React.Component {
     },
     sound: {},
     phase: 0,
-    fadeAnim: new Animated.Value(1)
+    fadeAnim: new Animated.Value(1),
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -75,7 +84,7 @@ export default class Main extends React.Component {
           })
       } catch (error) {
         // An error occurred!
-        console.log(error.message)
+        showError(error.message)
       }
     })
 
@@ -104,30 +113,15 @@ export default class Main extends React.Component {
                 status
               }
             })
-            console.log(this.state)
             // Your sound is playing!
           } catch (error) {
             // An error occurred!
-            console.log(error.message)
+            showError(error.message)
           }
         })
       })
 
     })
-  }
-  handleFadeOut() {
-    Animated.timing(this.state.fadeAnim, {
-      toValue: 0,
-      duration: 800,
-      easing: Easing.back(5)
-    }).start()
-  }
-  handleFadeIn() {
-    Animated.timing(this.state.fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      easing: Easing.back(5)
-    }).start()
   }
   componentWillMount() {
     this.alertIfRemoteNotificationsDisabledAsync()
@@ -141,10 +135,14 @@ export default class Main extends React.Component {
           currentAyah: json
         })
       })
+      .catch(e => {
+        showError(e.message)
+      })
   }
   uploadAudioAsync = async (uri) =>  {
     const { currentAyah } = this.state
     console.log("Uploading " + uri);
+    // let apiUrl = 'http://geekbahaa.pythonanywhere.com/';
     let apiUrl = 'https://tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
@@ -159,17 +157,31 @@ export default class Main extends React.Component {
       type: `audio/x-${fileType}`,
     });
 
-    let options = {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
-      },
-    };
+    var xhr = new XMLHttpRequest();
 
-    console.log("POSTing " + uri + " to " + apiUrl);
-    return fetch(apiUrl, options);
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        console.log(this.responseText);
+      }
+    });
+
+    xhr.open("POST", "https://tarteel.io/api/recordings/");
+    // xhr.setRequestHeader("Cache-Control", "no-cache");
+    // xhr.setRequestHeader("Postman-Token", "9d3e2ed7-7c2a-4f28-a425-b6cb5018ae11");
+
+    xhr.send(formData);
+
+    // let options = {
+    //   method: 'POST',
+    //   body: formData,
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     // 'Content-Type': 'multipart/form-data',
+    //   },
+    // };
+    //
+    // console.log("POSTing " + uri + " to " + apiUrl);
+    // return fetch(apiUrl, options);
   }
   handleRetry = () => {
     this.recording = null
@@ -180,107 +192,112 @@ export default class Main extends React.Component {
     })
     this.fetchNewAyah()
   }
-  addPhase = () => {
-    this.setState(
-      state => ({
-        phase: state.phase + 1
-      })
-    )
+  increaseRecords = () => {
+    this.props.dispatch(increaseRecords())
+  }
+  increaseAyahs = () => {
+    this.props.dispatch(increaseAyahs())
+  }
+  setLastDate = () => {
+    const today = new Date()
+    this.props.dispatch(setLastDate(today.getTime()))
   }
   handleSubmit = async () => {
-    let uri = await this.recording.getURI();
-    this.addPhase()
-    return this.uploadAudioAsync(uri);
-  }
-  handleNewOne = () => {
-    this.handleRetry()
-    this.setState({
-      phase: 0
-    })
+    const { recordingsCount, demographicData } = this.props
+      let uri = await this.recording.getURI();
+
+this.uploadAudioAsync(uri)
+
+      // this.uploadAudioAsync(uri).then((res) => {
+      //   console.log(res);
+      //   res.text().then(json => console.log(json))
+      //   // if(res.status === 201){
+      //     this.increaseRecords()
+      //     this.increaseAyahs()
+      //     if(recordingsCount === 4) {
+      //       this.setLastDate()
+      //       if(!demographicData)
+      //         Actions.demographic()
+      //       else {
+      //         if(!demographicData.age)
+      //           Actions.demographic()
+      //       }
+      //
+      //     }
+      //     else {
+      //       this.handleRetry()
+      //     }
+      //   // }
+      // })
+      // .catch(e => {
+      //   showError(e.message)
+      // })
   }
   render() {
-    const { status, currentAyah, fadeAnim, sound, phase }= this.state
-    const { isRecording, durationMillis, isDoneRecording } = status
+    const { status, currentAyah } = this.state
+    const { isRecording, isDoneRecording } = status
     return (
       <View style={styles.container}>
         <StatusBar />
         <Navbar>
           <View style={NavbarStyles.right}>
-            <MenuButton/>
+            <Button color={"transparent"} Height={50} Width={50} radius={0} onPress={Actions.profile}>
+              <FontAwesome name="user" size={32} color="#676A75" />
+            </Button>
           </View>
+
           <View style={NavbarStyles.left}>
-            <Text>
-            </Text>
+            <TouchableOpacity style={{ height: 50, width: 50}} onPress={Actions.about}>
+              <View style={styles.leftIconFigure}>
+                <Image source={require("../../../assets/imgs/account.png")}  />
+              </View>
+            </TouchableOpacity>
           </View>
         </Navbar>
+        <View style={[styles.container, { marginTop: 25 }]}>
         <View style={styles.ayahWrapper}>
-          {
-            !currentAyah.line ? <Loader /> :
-            <Text style={styles.ayahText}>
-              { currentAyah.line }
-            </Text>
-          }
-          {
-            Boolean(currentAyah.ayah) && <Text style={styles.ayahText}>
-              [{ currentAyah.surah }:{ currentAyah.ayah }]
-            </Text>
-          }
-        </View>
-        {
-          isDoneRecording ? null :
-          !isRecording ?
-              <Animated.View style={{ opacity: fadeAnim }}>
-              <Button onPress={this.handleRecording}>
-                <MaterialCommunityIcons name="microphone" size={32} color="white" />
-              </Button>
-            </Animated.View> :
-            <Animated.View style={{ opacity: fadeAnim }}>
-              <Text style={{ textAlign: "center" }}>
-                { secondsToTime(durationMillis) }
+            {
+              !currentAyah.line ? <Loader /> :
+                <Text style={styles.ayahText}>
+                  { currentAyah.line }
+                </Text>
+            }
+            {
+              Boolean(currentAyah.ayah) && <Text style={[styles.ayahText, styles.ayahPositionText]}>
+                [{ currentAyah.surah } : { currentAyah.ayah }]
               </Text>
-              <Button onPress={this.handleStopRecording} >
-                <MaterialCommunityIcons name="stop" size={32} color="white" />
-              </Button>
-            </Animated.View>
-        }
-        {
-          Boolean(sound.sound && phase === 0) && <AudioPlayer sound={sound}/>
-        }
-        {
-          Boolean(sound.sound) && <Footer newOne={this.handleNewOne} phase={phase} retry={this.handleRetry} submit={this.handleSubmit}/>
-        }
+            }
+          </View>
+          <View style={styles.recordingButtonsWrapper}>
+            {
+              isDoneRecording ?
+                <View style={styles.wrapper}>
+                  <Button onPress={this.handleRetry} Height={55} Width={55} color={"#19213B"} >
+                    <Feather name={"refresh-ccw"} size={28} color={"#fff"} />
+                  </Button>
+                  <Button style={{ marginTop: 50 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
+                    <Text style={styles.white}>Next</Text>
+                  </Button>
+                </View>
+                :
+                  <View style={styles.recordButtonWrapper} >
+                    <RecordingButton handleRecord={this.handleRecording}
+                                     handleStop={this.handleStopRecording} isRecording={isRecording} />
+                  </View>
+            }
+          </View>
+          <Steps />
+        </View>
       </View>
     )
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  right: {
-    transform: [
-      { translateY: 15 }
-    ]
-  },
-  left: {
-    transform: [
-      { translateY: 15 }
-    ]
-  },
-  ayahWrapper: {
-    marginBottom: 50
-  },
-  ayahText: {
-    textAlign: "center",
-    paddingHorizontal: 20,
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 15,
-    lineHeight: 30,
-    letterSpacing: 2,
-  }
-});
+
+export default connect(
+  state => ({
+    recordingsCount: state.records.count,
+    lastDate: state.records.lastDate,
+    demographicData: state.demographicData
+  })
+)(Main)

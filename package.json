@@ -10,12 +10,23 @@
   },
   "dependencies": {
     "expo": "^29.0.0",
-    "native-base": "^2.6.0",
+    "jquery": "^3.3.1",
+    "lodash.frompairs": "^4.0.1",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-29.0.0.tar.gz",
+    "react-native-country-picker-modal": "^0.6.2",
+    "react-native-material-dropdown": "^0.11.1",
     "react-native-material-ripple": "^0.8.0",
+    "react-native-remote-svg": "^1.2.0",
     "react-native-router-flux": "^4.0.0-beta.31",
+    "react-native-simple-events": "^1.0.1",
     "react-native-svg-animated-linear-gradient": "^0.1.9",
-    "styled-components": "^3.3.3"
+    "react-native-swiper": "^1.5.13",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0"
+  },
+  "devDependencies": {
+    "redux-logger": "^3.0.6"
   }
 }

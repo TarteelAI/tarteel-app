@@ -7,8 +7,7 @@ const {height, width} = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
     height: 50,
-    position: "absolute",
-    top: Constants.statusBarHeight + 5 ,
+    top: 5 ,
     left: 0,
     zIndex: 5,
     width: width,
@@ -16,32 +15,21 @@ export default StyleSheet.create({
   right: {
     position: "absolute",
     right: 10,
+    zIndex: 2
   },
   left: {
     position: "absolute",
     left: 10,
+    zIndex: 2
+  },
+  center: {
+    textAlign: "center",
+    fontSize: 18,
+    fontFamily: "Proxima-Nova-Alt-Regular",
+    lineHeight: 35,
+    // backgroundColor: "red",
   },
   menuIcon: {
 
   }
 })
-
-export const MenuButton = (props) => {
-  const customMenuBar = (width = 35) => ({
-    height: 5,
-    width: width,
-    marginBottom: 5,
-    borderRadius: 10,
-    backgroundColor: "#000",
-    alignSelf: "flex-end",
-  })
-  return (
-    <TouchableHighlight onPress={props.onPress}>
-      <View>
-        <View style={customMenuBar()}/>
-        <View style={customMenuBar()}/>
-        <View style={customMenuBar(25)}/>
-      </View>
-    </TouchableHighlight>
-  )
-}

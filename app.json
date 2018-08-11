@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "tarteel",
+    "name": "tarteel-v1",
     "description": "This project is really great.",
-    "slug": "tarteel",
+    "slug": "tarteel-v1",
     "privacy": "public",
     "sdkVersion": "29.0.0",
     "platforms": ["ios", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app-logo.png",
+    "icon": "./assets/imgs/app-logo.png",
     "splash": {
       "image": "./assets/splash-draft.png",
       "resizeMode": "contain",
@@ -22,6 +22,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content"
     }
   }
 }
