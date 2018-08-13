@@ -1,8 +1,7 @@
 import React from "react"
 import Swiper from 'react-native-swiper';
-import { View, Text, StatusBar } from "react-native"
+import { View, Text, StatusBar, Image } from "react-native"
 import { Actions } from "react-native-router-flux"
-import Image from "react-native-remote-svg"
 import { connect }  from "react-redux"
 import Expo from "expo";
 

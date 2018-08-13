@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, TextInput, Picker, TouchableWithoutFeedback } from "react-native"
+import { View, Text, TextInput, Picker, TouchableWithoutFeedback, Platform } from "react-native"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import CountryPicker, {
   getAllCountries
@@ -45,18 +45,21 @@ class DemographicForm extends React.Component {
     callingCode: "1",
   }
   handleSave = () => {
+    const { currentAyah } = this.props
     const { age, gender, cca2:ethnicity } = this.state
-    const data = { age, gender, ethnicity }
+    const data = { age, gender, ethnicity, platform: Platform.OS , session_id: currentAyah.session_id}
 
     fetch("https://tarteel.io/api/demographics/", {
       method: "POST",
       body: JSON.stringify(data)
     })
     .then((res) => {
-      console.log(res)
       if(res.status === 201) {
         this.props.dispatch(setDemographicData(data))
         Actions.profile()
+      }
+      else {
+        showError("error")
       }
     })
     .catch(e => {
@@ -174,4 +177,8 @@ class DemographicForm extends React.Component {
   }
 }
 
-export default connect()(DemographicForm)
+export default connect(
+  state => ({
+    currentAyah: state.ayahs.currentAyah
+  })
+)(DemographicForm)

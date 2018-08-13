@@ -1,11 +1,9 @@
 import React from "react"
-import { View, Text, Animated, Easing, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
+import { View, Text, Animated, Easing, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
 import Expo from "expo"
 import { MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
 import { Actions } from "react-native-router-flux"
-import Image from "react-native-remote-svg"
-// import { ajax } from "jquery"
 
 import Button from "../Button/index"
 import Navbar from "../Navbar";
@@ -17,7 +15,7 @@ import Steps from "../Steps"
 import RecordingButton from "../RecordingButton"
 
 import { increaseRecords, setRecords, setLastDate } from "../../store/actions/records"
-import { increaseAyahs } from "../../store/actions/ayahs"
+import { increaseAyahs, setCurrentAyah } from "../../store/actions/ayahs"
 import showError from "../../utils/showError"
 
 import styles from "./styles"
@@ -27,12 +25,6 @@ class Main extends React.Component {
     status: {
       isRecording: false,
       durationMillis: 0
-    },
-    currentAyah: {
-      line: "",
-      surah: "",
-      ayah: "",
-      hash: 0
     },
     sound: {},
     phase: 0,
@@ -128,67 +120,42 @@ class Main extends React.Component {
     this.fetchNewAyah()
   }
   fetchNewAyah = () => {
-    fetch("https://tarteel.io/get_ayah")
-      .then(res => res.json())
-      .then(json => {
-        this.setState({
-          currentAyah: json
-        })
-      })
-      .catch(e => {
-        showError(e.message)
-      })
+    this.props.dispatch(setCurrentAyah())
   }
   uploadAudioAsync = async (uri) =>  {
-    const { currentAyah } = this.state
+    const { currentAyah } = this.props
     console.log("Uploading " + uri);
-    // let apiUrl = 'http://geekbahaa.pythonanywhere.com/';
     let apiUrl = 'https://tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
     let formData = new FormData();
-    formData.append('surah_num', Number(currentAyah.surah));
-    formData.append('ayah_num', Number(currentAyah.ayah));
+    formData.append('surah_num', currentAyah.surah);
+    formData.append('ayah_num', currentAyah.ayah);
     formData.append('hash_string', String(currentAyah.hash));
+    formData.append('session_id', currentAyah.session_id);
     formData.append('file', {
       uri,
       name: `recording.${fileType}`,
       type: `audio/x-${fileType}`,
     });
 
-    var xhr = new XMLHttpRequest();
+    let options = {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
+    };
 
-    xhr.addEventListener("readystatechange", function () {
-      if (this.readyState === 4) {
-        console.log(this.responseText);
-      }
-    });
-
-    xhr.open("POST", "https://tarteel.io/api/recordings/");
-    // xhr.setRequestHeader("Cache-Control", "no-cache");
-    // xhr.setRequestHeader("Postman-Token", "9d3e2ed7-7c2a-4f28-a425-b6cb5018ae11");
-
-    xhr.send(formData);
-
-    // let options = {
-    //   method: 'POST',
-    //   body: formData,
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     // 'Content-Type': 'multipart/form-data',
-    //   },
-    // };
-    //
-    // console.log("POSTing " + uri + " to " + apiUrl);
-    // return fetch(apiUrl, options);
+    console.log("POSTing " + uri + " to " + apiUrl);
+    return fetch(apiUrl, options);
   }
   handleRetry = () => {
     this.recording = null
     this.setState({
       sound: {},
       status: {},
-      currentAyah: {}
     })
     this.fetchNewAyah()
   }
@@ -208,33 +175,34 @@ class Main extends React.Component {
 
 this.uploadAudioAsync(uri)
 
-      // this.uploadAudioAsync(uri).then((res) => {
-      //   console.log(res);
-      //   res.text().then(json => console.log(json))
-      //   // if(res.status === 201){
-      //     this.increaseRecords()
-      //     this.increaseAyahs()
-      //     if(recordingsCount === 4) {
-      //       this.setLastDate()
-      //       if(!demographicData)
-      //         Actions.demographic()
-      //       else {
-      //         if(!demographicData.age)
-      //           Actions.demographic()
-      //       }
-      //
-      //     }
-      //     else {
-      //       this.handleRetry()
-      //     }
-      //   // }
-      // })
-      // .catch(e => {
-      //   showError(e.message)
-      // })
+      this.uploadAudioAsync(uri).then((res) => {
+        console.log(res);
+        res.text().then(json => console.log(json))
+        if(res.status === 201){
+          this.increaseRecords()
+          this.increaseAyahs()
+          if(recordingsCount === 4) {
+            this.setLastDate()
+            if(!demographicData)
+              Actions.demographic()
+            else {
+              if(!demographicData.age)
+                Actions.demographic()
+            }
+
+          }
+          else {
+            this.handleRetry()
+          }
+        }
+      })
+      .catch(e => {
+        showError(e.message)
+      })
   }
   render() {
-    const { status, currentAyah } = this.state
+    const { status } = this.state
+    const { currentAyah } = this.props
     const { isRecording, isDoneRecording } = status
     return (
       <View style={styles.container}>
@@ -298,6 +266,7 @@ export default connect(
   state => ({
     recordingsCount: state.records.count,
     lastDate: state.records.lastDate,
-    demographicData: state.demographicData
+    demographicData: state.demographicData,
+    currentAyah: state.ayahs.currentAyah
   })
 )(Main)

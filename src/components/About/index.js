@@ -1,7 +1,6 @@
 import React from "react"
 import { connect }  from "react-redux"
-import { View, Text, Linking, ScrollView } from "react-native"
-import Image from "react-native-remote-svg"
+import { View, Text, Linking, ScrollView, Image } from "react-native"
 import { Actions } from "react-native-router-flux"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -18,21 +17,26 @@ import showError from "../../utils/showError"
 import styles from "./styles";
 
 class About extends React.Component {
+  state = {
+    count: ""
+  }
   handleContactUs = () => {
     Linking.openURL("mailto:support@tarteel.io")
   }
   componentWillMount() {
-    // fetch("")
-    // .then(res => res.json())
-    // .then(json => {
-
-    // })
-    // .catch((e) => {
-      // showError(e.message);
-    // })
+    fetch("https://tarteel.io/get_total_count/")
+    .then(res => res.json())
+    .then(json => {
+      this.setState({
+        count: json.count
+      })
+    })
+    .catch((e) => {
+      showError(e.message);
+    })
   }
   render() {
-    const { ayahsCount } = this.props
+    const { count } = this.state
     return (
       <View style={styles.container} >
         <StatusBar />
@@ -44,16 +48,11 @@ class About extends React.Component {
           </View>
         </Navbar>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.figure}>
-            <View style={styles.imageWrapper}>
-              <Image source={require("../../../assets/imgs/Logo.svg")} />
-            </View>
-            <View style={styles.figcaption}>
-              <Image source={require("../../../assets/imgs/mask.png")} />
-            </View>
+          <View style={styles.figure}>
+            <Image  source={require("../../../assets/imgs/Logo.png")} />
           </View>
           <View style={styles.title}>
-            <Text style={styles.ayahsCount}>{ numberWithCommas(ayahsCount) }</Text>
+            <Text style={styles.ayahsCount}>{ numberWithCommas(count) }</Text>
             <Text style={styles.titleText}>Ayas recorded</Text>
           </View>
           <Text style={styles.text}>
