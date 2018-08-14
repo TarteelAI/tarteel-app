@@ -20,13 +20,11 @@ export default StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "#ebebeb",
     marginTop: height * 0.15,
-    paddingTop: 10
   },
   listItem: {
-    paddingVertical: 10,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#ebebeb",
-    marginBottom: 20,
   },
   primaryColor: {
     color: "#485364",
