@@ -58,7 +58,7 @@ class DemographicForm extends React.Component {
     .then((res) => {
       if(res.status === 201) {
         this.props.dispatch(setDemographicData(data))
-        Actions.profile()
+        Actions.home()
       }
       else {
         showError("error")
@@ -132,6 +132,7 @@ class DemographicForm extends React.Component {
                   label=''
                   data={data}
                   containerStyle={styles.dropdown}
+                  inputContainerStyle={{ borderBottomColor: 'transparent' }}
                   dropdownOffset={{ top: 0 , left: 0 }}
                   value={this.state.gender}
                   fontSize={14}

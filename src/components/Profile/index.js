@@ -17,6 +17,10 @@ import styles from "./styles"
 import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
+  handleDemographicDataRouting = () => {
+    if(!this.props.demographicData.age)
+      Actions.demographicForm()
+  }
   state = {
     linksList: [
       {
@@ -67,10 +71,6 @@ class Profile extends React.Component {
   }
   handleRestore = () => {
     this.props.dispatch(restoreRecords())
-  }
-  handleDemographicDataRouting = () => {
-    if(!this.props.demographicData.age)
-      Actions.demographicForm()
   }
   render() {
     const { linksList } = this.state
