@@ -35,6 +35,7 @@ export default StyleSheet.create({
   },
   dropdown: {
     borderBottomWidth: 0,
+    borderBottomColor: 'transparent',
     position: "absolute", top: -2 , width: 1000, height: 1000,
     paddingLeft: -5
   },

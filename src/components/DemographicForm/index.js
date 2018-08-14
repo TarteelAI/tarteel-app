@@ -48,10 +48,12 @@ class DemographicForm extends React.Component {
     const { currentAyah } = this.props
     const { age, gender, cca2:ethnicity } = this.state
     const data = { age, gender, ethnicity, platform: Platform.OS , session_id: currentAyah.session_id}
-
     fetch("https://tarteel.io/api/demographics/", {
       method: "POST",
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
     .then((res) => {
       if(res.status === 201) {
@@ -101,6 +103,7 @@ class DemographicForm extends React.Component {
                   label=''
                   data={ages}
                   containerStyle={styles.dropdown}
+                  inputContainerStyle={{ borderBottomColor: 'transparent' }}
                   dropdownOffset={{ top: 0 , left: 0 }}
                   value={this.state.age}
                   fontSize={14}
