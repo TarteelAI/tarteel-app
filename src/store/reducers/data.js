@@ -1,6 +1,6 @@
 const initState = {
   totalAyahsCount: 0,
-  passedOnBoarding: false
+  passedOnBoarding: ""
 }
 
 export default (state = initState, action) => {

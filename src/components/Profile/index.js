@@ -23,6 +23,11 @@ class Profile extends React.Component {
   state = {
     linksList: [
       {
+        text: "Change Surah / Ayah",
+        key: 1,
+        onClick: () => Actions.change()
+      },
+      {
         text: "Demographic data",
         key: 1,
         onClick: this.handleDemographicDataRouting
@@ -70,23 +75,6 @@ class Profile extends React.Component {
   }
   handleRestore = () => {
     this.props.dispatch(restoreRecords())
-  }
-  componentWillMount() {
-    if(this.props.passedOnBoarding) {
-      this.setState((state, props) => {
-        return {
-          linksList: [
-            {
-              text: "Change Surah / Ayah",
-              key: 1,
-              onClick: () => Actions.change()
-            },
-            ...state.linksList
-          ]
-        }
-      });
-
-    }
   }
   render() {
     const { linksList } = this.state

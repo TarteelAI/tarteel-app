@@ -337,7 +337,7 @@ class Main extends React.Component {
               Boolean(currentAyah.ayah) && 
                 <TouchableOpacity onPress={() => { Actions.pickayah({currentAyah}) }}>
                   <View>
-                    { passedOnBoarding ? <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/> : null  }
+                    <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/>
                     <Text style={[styles.ayahText, styles.ayahPositionText]}>
                       [{ currentAyah.surah } : { currentAyah.ayah }]
                     </Text>
