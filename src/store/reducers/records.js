@@ -19,11 +19,6 @@ export default (state = initState  , action) => {
         ...state,
         count: action.val
       })
-    case "SET_LAST_DATE":
-      return ({
-        ...state,
-        lastDate: action.val
-      })
     default:
       return state
   }

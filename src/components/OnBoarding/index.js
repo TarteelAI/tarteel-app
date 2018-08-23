@@ -1,6 +1,6 @@
 import React from "react"
 import Swiper from 'react-native-swiper';
-import { View, Text, StatusBar, Image } from "react-native"
+import {View, Text, StatusBar, Image, Linking} from "react-native"
 import { Actions } from "react-native-router-flux"
 import { connect }  from "react-redux"
 import Expo from "expo";
@@ -8,7 +8,7 @@ import Expo from "expo";
 // import StatusBar from "../StatusBar";
 import Button from "../Button"
 import Snackbar from '../SnackBar'
-import {setPassedOnBoarding} from "../../utils";
+import {setPassedOnBoardingScreen} from "../../utils";
 import showError from "../../utils/showError";
 
 import styles from "./styles"
@@ -41,7 +41,7 @@ class OnBoarding extends React.Component {
       }
     }
     else if (stage === 2) {
-      setPassedOnBoarding(true).catch(e => showError(e.message))
+      setPassedOnBoardingScreen(true).catch(e => showError(e.message))
       Actions.home()
     }
   }
@@ -54,6 +54,9 @@ class OnBoarding extends React.Component {
     else {
       cb()
     }
+  }
+  handleLink = () => {
+    Linking.openURL("https://tarteel.io/privacy")
   }
   render() {
     const { stage, scrollEnabled } = this.state
@@ -93,7 +96,7 @@ class OnBoarding extends React.Component {
                 Privacy Policy
               </Text>
               <Text style={styles.text}>
-                As part of making an public dataset, we want to let you know that your recordings will be released. You can read our privacy policy here (http://tarteel.io/privacy/)
+                As part of making an public dataset, we want to let you know that your recordings will be released. You can read our privacy policy <Text style={styles.link} onPress={this.handleLink}>here</Text>
               </Text>
             </View>
           </Swiper>

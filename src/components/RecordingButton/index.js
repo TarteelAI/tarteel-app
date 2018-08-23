@@ -72,6 +72,11 @@ export default class RecordingButton extends React.Component {
     this.resetAnimation()
     this.props.handleStop()
   }
+  componentWillReceiveProps() {
+    if(this.props.animateManual) {
+      this.startAnimation()
+    }
+  }
   render() {
     const { isRecording } = this.props
     const styles = stylesFactory(this.props)

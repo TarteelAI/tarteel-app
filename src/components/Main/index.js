@@ -1,7 +1,7 @@
 import React from "react"
-import { View, Text, Animated, Easing, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
+import { View, Text, Animated, ScrollView, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
 import Expo from "expo"
-import { MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
 import { Actions } from "react-native-router-flux"
 
@@ -14,11 +14,20 @@ import Snackbar from '../SnackBar'
 import Steps from "../Steps"
 import RecordingButton from "../RecordingButton"
 
-import { increaseRecords, setRecords, setLastDate } from "../../store/actions/records"
-import { increaseAyahs, setCurrentAyah } from "../../store/actions/ayahs"
+import { increaseRecords, setRecords } from "../../store/actions/records"
+import {increaseAyahs, setCurrentAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
 import showError from "../../utils/showError"
+import { surahs } from "../PickSurah/surahs";
 
 import styles from "./styles"
+import {
+  loadNextAyah,
+  loadPreviousAyah,
+  loadRandomAyah,
+  setNextAyah,
+  setPreviousAyah
+} from "../../store/actions/preloadedAyahs";
+import {setpassedOnBoarding} from "../../store/actions";
 
 class Main extends React.Component {
   state = {
@@ -29,6 +38,7 @@ class Main extends React.Component {
     sound: {},
     phase: 0,
     fadeAnim: new Animated.Value(1),
+    animateRecordingButton: false
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -56,7 +66,7 @@ class Main extends React.Component {
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
-    }
+      }
     }
     Expo.Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
@@ -115,12 +125,30 @@ class Main extends React.Component {
 
     })
   }
-  componentWillMount() {
+  async componentWillMount() {
     this.alertIfRemoteNotificationsDisabledAsync()
-    this.fetchNewAyah()
+    try {
+      const lastAyah = JSON.parse(await AsyncStorage.getItem("lastAyah"))
+      // If it's specific the specific function sets the ayah
+      if(!this.props.specific) {
+        if(lastAyah && lastAyah.surah) {
+          this.props.dispatch(setStaticAyah(lastAyah))
+          this.props.dispatch(loadNextAyah())
+          this.props.dispatch(loadPreviousAyah())
+        }
+        else
+          this.fetchRandomAyah()
+      }
+    }catch (e) {
+      showError(e.message)
+    }
   }
-  fetchNewAyah = () => {
+  fetchRandomAyah = () => {
     this.props.dispatch(setCurrentAyah())
+    this.props.dispatch(loadRandomAyah())
+  }
+  fetchSpecificAyah = (surah, ayah) => {
+    this.props.dispatch(setSpecificAyah(String(surah), String(ayah)))
   }
   uploadAudioAsync = async (uri) =>  {
     const { currentAyah } = this.props
@@ -151,13 +179,22 @@ class Main extends React.Component {
     console.log("POSTing " + uri + " to " + apiUrl);
     return fetch(apiUrl, options);
   }
+  resetRecording = () => {
+    this.recording = null
+    this.setState({
+      sound: {},
+      status: {},
+      animateRecordingButton: false
+    })
+  }
   handleRetry = () => {
     this.recording = null
     this.setState({
       sound: {},
       status: {},
+      animateRecordingButton: true
     })
-    this.fetchNewAyah()
+    this.handleRecording()
   }
   increaseRecords = () => {
     this.props.dispatch(increaseRecords())
@@ -165,56 +202,122 @@ class Main extends React.Component {
   increaseAyahs = () => {
     this.props.dispatch(increaseAyahs())
   }
-  setLastDate = () => {
-    const today = new Date()
-    this.props.dispatch(setLastDate(today.getTime()))
-  }
   handleSubmit = async () => {
-    const { recordingsCount, demographicData } = this.props
-      let uri = await this.recording.getURI();
+    const { recordingsCount, demographicData, passedOnBoarding } = this.props
 
-this.uploadAudioAsync(uri)
+    let uri = await this.recording.getURI();
 
-      this.uploadAudioAsync(uri).then((res) => {
-        console.log(res);
-        res.text().then(json => console.log(json))
-        if(res.status === 201){
-          this.increaseRecords()
-          this.increaseAyahs()
-          if(recordingsCount === 4) {
-            this.setLastDate()
-            if(!demographicData)
-              Actions.demographic()
-            else {
-              if(!demographicData.age)
-                Actions.demographic()
-            }
+    this.uploadAudioAsync(uri).then((res) => {
+      if (res.status === 201) {
+      }
+    }).catch(e => {
+      showError(e.message)
+    })
 
-          }
-          else {
-            this.handleRetry()
-          }
-        }
-      })
-      .catch(e => {
-        showError(e.message)
-      })
+    this.increaseRecords()
+    this.increaseAyahs()
+    if(recordingsCount === 4) {
+      this.props.dispatch(setpassedOnBoarding(true))
+      if(!demographicData)
+        Actions.demographic()
+      else {
+        if(!demographicData.age)
+          Actions.demographic()
+      }
+
+    }
+    else {
+      if(passedOnBoarding){
+        this.handleNextAyah()
+      }
+      else {
+        this.fetchRandomAyah()
+      }
+      this.resetRecording()
+    }
+  }
+  handlePreviousAyah = () => {
+    const { previousAyah } = this.props.preloadedAyahs
+    if (previousAyah.surah) {
+      this.props.dispatch(setNextAyah(this.props.currentAyah))
+      this.props.dispatch(setStaticAyah(previousAyah))
+      this.props.dispatch(loadPreviousAyah())
+    } else  {
+      const { ayah, surah } = this.props.currentAyah
+      const prevAyah = Number(ayah) - 1
+      if(ayah == 1) {
+        const prevSurah = Number(surah) - 1
+        this.fetchSpecificAyah(prevSurah, surahs[prevSurah].ayah)
+      }
+      else
+        this.fetchSpecificAyah(surah, String(prevAyah))
+    }
+  }
+  handleNextAyah = () => {
+    const { nextAyah } = this.props.preloadedAyahs
+    if (nextAyah.surah) {
+      this.props.dispatch(setPreviousAyah(this.props.currentAyah))
+      this.props.dispatch(setStaticAyah(nextAyah))
+      this.props.dispatch(loadNextAyah())
+
+    } else {
+      const { ayah, surah } = this.props.currentAyah
+      const nextAyah = Number(ayah) + 1
+      if(surahs[surah]["ayah"] == nextAyah - 1) {
+        const nextSurah = Number(surah) + 1
+        this.fetchSpecificAyah(nextSurah, 1)
+      }
+      else
+        this.fetchSpecificAyah(surah, String(nextAyah))
+    }
   }
   render() {
-    const { status } = this.state
-    const { currentAyah } = this.props
+    const { status, animateRecordingButton } = this.state
+    const { currentAyah, passedOnBoarding } = this.props
     const { isRecording, isDoneRecording } = status
+    const NavigationButtons = () => (
+      (isDoneRecording) ?
+        <View style={styles.navigationButtons}>
+          <View style={styles.navigationButton}>
+            <TouchableOpacity style={{ padding: 10}} onPress={() => {
+              this.handlePreviousAyah()
+              this.resetRecording()
+            }}>
+              <View>
+                <Text style={styles.navigationButtonText}>Previous Ayah</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+          :
+        <View style={[ styles.navigationButtons, { opacity: isRecording ? 0 : 1 } ]}>
+          <View style={styles.navigationButton}>
+            <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
+              <View>
+                <Text style={styles.navigationButtonText}>Previous</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.navigationButton}>
+            <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
+            <View>
+            <Text style={styles.navigationButtonText}>Next</Text>
+            </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+    )
     return (
       <View style={styles.container}>
         <StatusBar />
-        <Navbar>
-          <View style={NavbarStyles.right}>
+        <Navbar style={{ height: 55 }}>
+          <View style={[NavbarStyles.right, { transform: [ { translateY: 5 } ]}]}>
             <Button color={"transparent"} Height={50} Width={50} radius={0} onPress={Actions.profile}>
-              <FontAwesome name="user" size={32} color="#676A75" />
+              <FontAwesome name="user" size={35} color="#676A75" />
             </Button>
           </View>
 
-          <View style={NavbarStyles.left}>
+          <View style={[NavbarStyles.left, { transform: [ { translateY: 5 } ]}]}>
             <TouchableOpacity style={{ height: 50, width: 50}} onPress={Actions.about}>
               <View style={styles.leftIconFigure}>
                 <Image source={require("../../../assets/imgs/account.png")}  />
@@ -223,7 +326,7 @@ this.uploadAudioAsync(uri)
           </View>
         </Navbar>
         <View style={[styles.container, { marginTop: 25 }]}>
-        <View style={styles.ayahWrapper}>
+          <View style={styles.ayahWrapper}>
             {
               !currentAyah.line ? <Loader /> :
                 <Text style={styles.ayahText}>
@@ -231,9 +334,15 @@ this.uploadAudioAsync(uri)
                 </Text>
             }
             {
-              Boolean(currentAyah.ayah) && <Text style={[styles.ayahText, styles.ayahPositionText]}>
-                [{ currentAyah.surah } : { currentAyah.ayah }]
-              </Text>
+              Boolean(currentAyah.ayah) && 
+                <TouchableOpacity onPress={() => { Actions.pickayah({currentAyah}) }}>
+                  <View>
+                    { passedOnBoarding ? <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/> : null  }
+                    <Text style={[styles.ayahText, styles.ayahPositionText]}>
+                      [{ currentAyah.surah } : { currentAyah.ayah }]
+                    </Text>
+                  </View>
+                </TouchableOpacity>
             }
           </View>
           <View style={styles.recordingButtonsWrapper}>
@@ -250,11 +359,13 @@ this.uploadAudioAsync(uri)
                 :
                   <View style={styles.recordButtonWrapper} >
                     <RecordingButton handleRecord={this.handleRecording}
-                                     handleStop={this.handleStopRecording} isRecording={isRecording} />
+                                     handleStop={this.handleStopRecording} isRecording={isRecording} animateManual={animateRecordingButton} />
                   </View>
             }
           </View>
-          <Steps />
+          {
+            passedOnBoarding ? <NavigationButtons /> : <Steps />
+          }
         </View>
       </View>
     )
@@ -262,11 +373,13 @@ this.uploadAudioAsync(uri)
 }
 
 
+
 export default connect(
   state => ({
     recordingsCount: state.records.count,
-    lastDate: state.records.lastDate,
     demographicData: state.demographicData,
-    currentAyah: state.ayahs.currentAyah
+    currentAyah: state.ayahs.currentAyah,
+    preloadedAyahs: state.preloadedAyahs,
+    passedOnBoarding: state.data.passedOnBoarding
   })
 )(Main)

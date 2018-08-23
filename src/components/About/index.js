@@ -17,26 +17,11 @@ import showError from "../../utils/showError"
 import styles from "./styles";
 
 class About extends React.Component {
-  state = {
-    count: ""
-  }
   handleContactUs = () => {
     Linking.openURL("mailto:support@tarteel.io")
   }
-  componentWillMount() {
-    fetch("https://tarteel.io/get_total_count/")
-    .then(res => res.json())
-    .then(json => {
-      this.setState({
-        count: json.count
-      })
-    })
-    .catch((e) => {
-      showError(e.message);
-    })
-  }
   render() {
-    const { count } = this.state
+    const { totalAyahsCount } = this.props
     return (
       <View style={styles.container} >
         <StatusBar />
@@ -52,7 +37,7 @@ class About extends React.Component {
             <Image  source={require("../../../assets/imgs/Logo.png")} />
           </View>
           <View style={styles.title}>
-            <Text style={styles.ayahsCount}>{ numberWithCommas(count) }</Text>
+            <Text style={styles.ayahsCount}>{ numberWithCommas(totalAyahsCount) }</Text>
             <Text style={styles.titleText}>Ayas recorded</Text>
           </View>
           <Text style={styles.text}>
@@ -79,6 +64,7 @@ class About extends React.Component {
 
 export default connect(
   state => ({
-    ayahsCount: state.ayahs.count
+    ayahsCount: state.ayahs.count,
+    totalAyahsCount: state.data.totalAyahsCount
   })
 )(About)
