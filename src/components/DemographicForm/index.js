@@ -39,9 +39,9 @@ const ages = [
 
 class DemographicForm extends React.Component {
   state = {
-    age: "19-25",
-    gender: "Male",
-    cca2: "US",
+    age: this.props.demographicData.age || "19-25",
+    gender: this.props.demographicData.gender || "Male",
+    cca2: this.props.demographicData.ethnicity || "US",
     callingCode: "1",
   }
   handleSave = () => {
@@ -183,6 +183,7 @@ class DemographicForm extends React.Component {
 
 export default connect(
   state => ({
-    currentAyah: state.ayahs.currentAyah
+    currentAyah: state.ayahs.currentAyah,
+    demographicData: state.demographicData
   })
 )(DemographicForm)

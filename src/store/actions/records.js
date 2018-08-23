@@ -42,30 +42,3 @@ export const setRecords = (val) => {
   }
 }
 
-export const setLastDate = (val) => {
-  return async (dispatch, getState) => {
-    try {
-      await AsyncStorage.setItem('lastDate', String(val))
-      dispatch({
-        type: "SET_LAST_DATE",
-        val
-      })
-    } catch (error) {
-      showError(error.message)
-    }
-  }
-}
-
-export const getLastDate = () => {
-  return async (dispatch, getState) => {
-    try {
-      const val = await AsyncStorage.getItem('lastDate')
-      dispatch({
-        type: "SET_LAST_DATE",
-        val: Number(val)
-      })
-    } catch (error) {
-      showError(error.message)
-    }
-  }
-}

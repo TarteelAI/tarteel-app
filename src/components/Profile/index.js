@@ -18,8 +18,7 @@ import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
   handleDemographicDataRouting = () => {
-    if(!this.props.demographicData.age)
-      Actions.demographicForm()
+    Actions.demographicForm()
   }
   state = {
     linksList: [
@@ -71,6 +70,23 @@ class Profile extends React.Component {
   }
   handleRestore = () => {
     this.props.dispatch(restoreRecords())
+  }
+  componentWillMount() {
+    if(this.props.passedOnBoarding) {
+      this.setState((state, props) => {
+        return {
+          linksList: [
+            {
+              text: "Change Surah / Ayah",
+              key: 1,
+              onClick: () => Actions.change()
+            },
+            ...state.linksList
+          ]
+        }
+      });
+
+    }
   }
   render() {
     const { linksList } = this.state
@@ -128,6 +144,7 @@ const ListItem = ({ item }) => {
 export default connect(
   state => ({
     ayahsCount: state.ayahs.count,
-    demographicData: state.demographicData
+    demographicData: state.demographicData,
+    passedOnBoarding: state.data.passedOnBoarding
   })
 )(Profile)

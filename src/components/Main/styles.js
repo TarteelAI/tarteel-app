@@ -21,7 +21,7 @@ export default StyleSheet.create({
   },
   ayahWrapper: {
     flex: 2,
-    justifyContent: "flex-end",
+    justifyContent: "center",
     alignItems: "center",
   },
   ayahText: {
@@ -74,6 +74,26 @@ export default StyleSheet.create({
     color: "#fff"
   },
   recordingButtonsWrapper: {
-    flex: 3,
+    flex: 2,
+  },
+  navigationButtons: {
+    bottom: height * 0.05,
+    flexDirection: "row",
+    justifyContent: "center",
+    width: 200
+  },
+  navigationButton: {
+    marginHorizontal: 30,
+  },
+  navigationButtonText: {
+    fontFamily: "Proxima-Nova-Alt-Regular",
+    fontWeight: "400",
+    textAlign: 'center',
+    color: "#a5aab2",
+  },
+  exclamationIcon: {
+    position: "absolute",
+    top: 5,
+    right: 5,
   }
 });

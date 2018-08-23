@@ -66,5 +66,8 @@ export default StyleSheet.create({
   },
   white: {
     color: "#fff"
+  },
+  link: {
+    color: "#0066ee"
   }
 })
