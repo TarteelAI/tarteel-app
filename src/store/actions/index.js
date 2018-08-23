@@ -40,12 +40,12 @@ export const getTotalAyahsCount = () => {
 }
 
 export const setpassedOnBoarding = (value) => {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     try {
-      await AsyncStorage.setItem('passedOnBoarding', String(value))
+      AsyncStorage.setItem('passedOnBoarding', String(value))
       dispatch ({
         type: "SET_PASSED_ON_BOARDING",
-        value
+        value: Boolean(value)
       })
     } catch (error) {
       throw new Error(error.message)

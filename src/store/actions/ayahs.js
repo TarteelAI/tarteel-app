@@ -63,6 +63,7 @@ export const setCurrentAyah = () => {
             type: "SET_CURRENT_AYAH",
             currentAyah: json
           })
+          setLastAyah(json)
         })
         .catch(e => {
           showError(e.message)
