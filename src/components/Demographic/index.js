@@ -20,7 +20,7 @@ class Demographic extends React.Component {
           Demographic Data
         </Text>
         <Text style={styles.text}>
-          By sharing your demographic data, developers will be able to use it to build a more robust and accurate Machine learning models. The data you share cannot be used to personally identify you. This step is completely optional, you can opt-in or skip below.
+          By sharing your demographic data, developers will be able to use it to build more robust and accurate Machine learning models. The data you share cannot be used to personally identify you. This step is completely optional, you can opt-in or skip below.
         </Text>
         <View style={styles.bottomButtons}>
           <Button radius={23} Width={150} Height={45} color={"#58BCB0"} onPress={Actions.demographicForm}>

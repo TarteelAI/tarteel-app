@@ -33,9 +33,8 @@ class Profile extends React.Component {
         key: 2,
         onClick: () => {
           Share.share({
-            message: 'Test test test',
-            url: 'https://expo.io/',
-            title: 'React Native',
+            url: 'http://tarteel.app.link/3NMFNtbiBP',
+            title: 'Share Tarteel',
           }).then(() => {
 
           }).catch(e => showError(e.message))
