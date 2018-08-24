@@ -10,7 +10,7 @@ export const setDemographicData = (obj) => {
         obj
       })
     } catch (error) {
-      showError(e.message)
+      showError(error.message)
     }
   }
 }
@@ -19,7 +19,7 @@ export const setDemographicData = (obj) => {
 export const getDemographicData = () => {
   return async (dispatch, getState) => {
     try {
-      const obj = await AsyncStorage.getItem('demographicData')
+      const obj = await AsyncStorage.getItem('demographicData') || {}
       dispatch({
         type: "SET_DEMOGRAPHIC_DATA",
         obj: JSON.parse(obj)

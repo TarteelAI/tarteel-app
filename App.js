@@ -38,7 +38,6 @@ export default class App extends React.Component {
     try {
       const { recordsCount, passedOnBoarding, passedOnBoardingScreen } = fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen"]))
       this.setState({ loading: false, passedOnBoardingScreen })
-      console.log(passedOnBoarding)
       store.dispatch(setpassedOnBoarding(passedOnBoarding))
       store.dispatch(setRecords(Number(recordsCount)))
     }

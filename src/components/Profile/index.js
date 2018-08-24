@@ -17,9 +17,6 @@ import styles from "./styles"
 import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
-  handleDemographicDataRouting = () => {
-    Actions.demographicForm()
-  }
   state = {
     linksList: [
       {
@@ -30,7 +27,7 @@ class Profile extends React.Component {
       {
         text: "Demographic data",
         key: 1,
-        onClick: this.handleDemographicDataRouting
+        onClick: () => Actions.demographicForm()
       },
       {
         text: "Share Tarteel",

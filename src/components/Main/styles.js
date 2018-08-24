@@ -27,7 +27,7 @@ export default StyleSheet.create({
   ayahText: {
     textAlign: "center",
     paddingHorizontal: 20,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 15,
     lineHeight: 30,
