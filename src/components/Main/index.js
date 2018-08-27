@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, Animated, ScrollView, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
+import { View, Text, Animated, Switch, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
 import Expo from "expo"
 import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
@@ -28,6 +28,9 @@ import {
   setPreviousAyah
 } from "../../store/actions/preloadedAyahs";
 import {setpassedOnBoarding} from "../../store/actions";
+import {setLastAyah} from "../../utils";
+
+let isClickedStop = false
 
 class Main extends React.Component {
   state = {
@@ -38,7 +41,8 @@ class Main extends React.Component {
     sound: {},
     phase: 0,
     fadeAnim: new Animated.Value(1),
-    animateRecordingButton: false
+    animateRecordingButton: false,
+    continuous: false,
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -48,6 +52,7 @@ class Main extends React.Component {
     }
   }
   handleRecording = async () => {
+    if(this.state.continuous) isClickedStop = false
     const recordingOptions = {
       ios: {
         extension: ".wav",
@@ -92,9 +97,19 @@ class Main extends React.Component {
 
   }
   onRecordingStatusUpdate = (status) => {
-    this.setState({
-      status
-    })
+    if(this.state.continuous) {
+      this.setState({
+        status: {
+          ...status,
+          isRecording: isClickedStop ? false : true,
+          isDoneRecording: !isClickedStop ,
+        }
+      })
+    } else {
+      this.setState({
+        status
+      })
+    }
   }
   handleStopRecording = () => {
     this.recording.stopAndUnloadAsync().then(async () => {
@@ -152,19 +167,20 @@ class Main extends React.Component {
   }
   uploadAudioAsync = async (uri) =>  {
     const { currentAyah } = this.props
+    const { surah, ayah, hash, session_id } = currentAyah
     console.log("Uploading " + uri);
     let apiUrl = 'https://tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
     let formData = new FormData();
-    formData.append('surah_num', currentAyah.surah);
-    formData.append('ayah_num', currentAyah.ayah);
-    formData.append('hash_string', String(currentAyah.hash));
-    formData.append('session_id', currentAyah.session_id);
+    formData.append('surah_num', surah);
+    formData.append('ayah_num', ayah);
+    formData.append('hash_string', String(hash));
+    formData.append('session_id', session_id);
     formData.append('file', {
       uri,
-      name: `recording.${fileType}`,
+      name: `${surah}_${ayah}_${hash}.${fileType}`,
       type: `audio/x-${fileType}`,
     });
 
@@ -242,6 +258,7 @@ class Main extends React.Component {
       this.props.dispatch(setNextAyah(this.props.currentAyah))
       this.props.dispatch(setStaticAyah(previousAyah))
       this.props.dispatch(loadPreviousAyah())
+      setLastAyah(previousAyah)
     } else  {
       const { ayah, surah } = this.props.currentAyah
       const prevAyah = Number(ayah) - 1
@@ -259,6 +276,7 @@ class Main extends React.Component {
       this.props.dispatch(setPreviousAyah(this.props.currentAyah))
       this.props.dispatch(setStaticAyah(nextAyah))
       this.props.dispatch(loadNextAyah())
+      setLastAyah(nextAyah)
 
     } else {
       const { ayah, surah } = this.props.currentAyah
@@ -271,41 +289,63 @@ class Main extends React.Component {
         this.fetchSpecificAyah(surah, String(nextAyah))
     }
   }
+  handleContinuousNext = () => {
+    const { continuous } = this.state
+    if(continuous) {
+      this.recording.stopAndUnloadAsync().then(async () => {
+        Expo.Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          playsInSilentModeIOS: true,
+          playsInSilentLockedModeIOS: true,
+          shouldDuckAndroid: true,
+          interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+        }).then(() => {
+          this.recording.createNewLoadedSound()
+            .then(async ({sound, status}) => {
+              try {
+                let uri = await this.recording.getURI();
+
+                this.uploadAudioAsync(uri).then((res) => {
+                  if (res.status === 201) {
+                    console.log("posted")
+                  }
+                }).catch(e => {
+                  showError(e.message)
+                })
+
+                this.increaseRecords()
+                this.increaseAyahs()
+                this.handleNextAyah()
+                this.handleRecording()
+                // this.resetRecording()
+
+                // Your sound is playing!
+              } catch (error) {
+                // An error occurred!
+                showError(error.message)
+              }
+            })
+        })
+
+      })
+    }
+  }
   render() {
-    const { status, animateRecordingButton } = this.state
+    const { status, animateRecordingButton, continuous } = this.state
     const { currentAyah, passedOnBoarding } = this.props
     const { isRecording, isDoneRecording } = status
     const NavigationButtons = () => (
-      (isDoneRecording) ?
-        <View style={styles.navigationButtons}>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={() => {
-              this.handlePreviousAyah()
-              this.resetRecording()
-            }}>
-              <View>
-                <Text style={styles.navigationButtonText}>Previous Ayah</Text>
-              </View>
-            </TouchableOpacity>
+      <View style={styles.navigationButton}>
+        <TouchableOpacity style={{ padding: 10}} onPress={() => {
+          this.handlePreviousAyah()
+          this.resetRecording()
+        }}>
+          <View>
+            <Text style={styles.navigationButtonText}>Previous Ayah</Text>
           </View>
-        </View>
-          :
-        <View style={[ styles.navigationButtons, { opacity: isRecording ? 0 : 1 } ]}>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
-              <View>
-                <Text style={styles.navigationButtonText}>Previous</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
-            <View>
-            <Text style={styles.navigationButtonText}>Next</Text>
-            </View>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </TouchableOpacity>
+      </View>
     )
     return (
       <View style={styles.container}>
@@ -347,24 +387,61 @@ class Main extends React.Component {
           </View>
           <View style={styles.recordingButtonsWrapper}>
             {
-              isDoneRecording ?
+              isDoneRecording  && !continuous ?
                 <View style={styles.wrapper}>
                   <Button onPress={this.handleRetry} Height={55} Width={55} color={"#19213B"} >
                     <Feather name={"refresh-ccw"} size={28} color={"#fff"} />
                   </Button>
-                  <Button style={{ marginTop: 50 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
+                  <Button style={{ marginTop: 25 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
                     <Text style={styles.white}>Next</Text>
                   </Button>
                 </View>
                 :
                   <View style={styles.recordButtonWrapper} >
                     <RecordingButton handleRecord={this.handleRecording}
-                                     handleStop={this.handleStopRecording} isRecording={isRecording} animateManual={animateRecordingButton} />
+                                     handleStop={() => {
+                                       if(this.state.continuous) isClickedStop = true
+                                       this.handleStopRecording()
+                                     }} isRecording={isRecording} continuous={continuous} animateManual={animateRecordingButton} />
+                    <View style={[ styles.navigationButtons, { opacity: isRecording ? 0 : 1 } ]}>
+                      <View>
+                        <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
+                          <View>
+                            <Text style={styles.navigationButtonText}>Previous</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View>
+                        <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
+                          <View>
+                            <Text style={styles.navigationButtonText}>Next</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    {
+                      isRecording && continuous ?
+                      <Button radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleContinuousNext}>
+                        <Text style={styles.white}>Next</Text>
+                      </Button> : null
+                    }
                   </View>
             }
           </View>
           {
-            passedOnBoarding ? <NavigationButtons /> : <Steps />
+            isDoneRecording && !continuous ? <NavigationButtons /> : null
+          }
+          {
+            !passedOnBoarding ? <Steps /> :
+              !isRecording && !isDoneRecording &&
+            <View style={styles.continuousSwitch}>
+              <Switch
+                value={continuous}
+                onValueChange={(val) => this.setState({ continuous: val }) }
+                onTintColor={"#5ec49e"}
+              />
+              <Text style={styles.continuousSwitchText}>continuous recording</Text>
+            </View>
           }
         </View>
       </View>

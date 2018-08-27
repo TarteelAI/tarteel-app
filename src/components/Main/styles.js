@@ -21,8 +21,9 @@ export default StyleSheet.create({
   },
   ayahWrapper: {
     flex: 2,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
+    paddingTop: 16,
   },
   ayahText: {
     textAlign: "center",
@@ -61,29 +62,33 @@ export default StyleSheet.create({
     top: 10
   },
   recordButtonWrapper: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
+    maxHeight: 350,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    // backgroundColor: "cyan"
   },
   wrapper: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: 'center'
+    maxHeight: 150,
+    justifyContent: "flex-end",
+    alignItems: 'center',
+    padding: 10,
   },
   white: {
     color: "#fff"
   },
   recordingButtonsWrapper: {
-    flex: 2,
+    maxHeight: 250,
+    marginBottom: 35,
   },
   navigationButtons: {
-    bottom: height * 0.05,
+    top: -55,
     flexDirection: "row",
-    justifyContent: "center",
-    width: 200
+    justifyContent: "space-between",
+    width: 225,
+    left: -10
   },
   navigationButton: {
-    marginHorizontal: 30,
+    bottom: 25,
   },
   navigationButtonText: {
     fontFamily: "Proxima-Nova-Alt-Regular",
@@ -95,5 +100,12 @@ export default StyleSheet.create({
     position: "absolute",
     top: 5,
     right: 5,
+  },
+  continuousSwitch: {
+    alignItems: "center",
+    bottom: height * 0.04,
+  },
+  continuousSwitchText: {
+    color: "#A5AAB2"
   }
 });
