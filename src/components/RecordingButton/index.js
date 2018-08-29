@@ -108,10 +108,15 @@ const buttonWidth = 65
 
 const stylesFactory = (props) => StyleSheet.create({
   container: {
-    width: buttonWidth * 2 ,
+    width: buttonWidth * 1.75,
     height: buttonHeight  * 2,
     justifyContent: "center",
     alignItems: "center",
+    transform: [
+      {translateY: 30}
+    ],
+    // backgroundColor: "green",
+    zIndex: 5,
   },
   wrapper: {
     width: buttonWidth,
@@ -119,7 +124,6 @@ const stylesFactory = (props) => StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius:  50,
-
   },
   background: {
     backgroundColor: props.isRecording ? "#c45e5e" : "#408F84" ,
@@ -141,7 +145,7 @@ const stylesFactory = (props) => StyleSheet.create({
   },
   bordered: {
     width: buttonWidth,
-    height: buttonHeight ,
+    height: buttonHeight,
     borderWidth: 2,
     borderRadius: 50,
     backgroundColor: "#fff",

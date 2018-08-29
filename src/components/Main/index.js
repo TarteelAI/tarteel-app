@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, Animated, ScrollView, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
+import { View, Text, Animated, Switch, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
 import Expo from "expo"
 import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
@@ -27,7 +27,10 @@ import {
   setNextAyah,
   setPreviousAyah
 } from "../../store/actions/preloadedAyahs";
-import {setpassedOnBoarding} from "../../store/actions";
+import {increaseTotalCount, setContinuous, setpassedOnBoarding} from "../../store/actions";
+import {setLastAyah} from "../../utils";
+
+let isClickedStop = false
 
 class Main extends React.Component {
   state = {
@@ -38,7 +41,7 @@ class Main extends React.Component {
     sound: {},
     phase: 0,
     fadeAnim: new Animated.Value(1),
-    animateRecordingButton: false
+    animateRecordingButton: false,
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -48,6 +51,7 @@ class Main extends React.Component {
     }
   }
   handleRecording = async () => {
+    if(this.props.continuous) isClickedStop = false
     const recordingOptions = {
       ios: {
         extension: ".wav",
@@ -92,9 +96,19 @@ class Main extends React.Component {
 
   }
   onRecordingStatusUpdate = (status) => {
-    this.setState({
-      status
-    })
+    if(this.props.continuous) {
+      this.setState({
+        status: {
+          ...status,
+          isRecording: isClickedStop ? false : true,
+          isDoneRecording: !isClickedStop ,
+        }
+      })
+    } else {
+      this.setState({
+        status
+      })
+    }
   }
   handleStopRecording = () => {
     this.recording.stopAndUnloadAsync().then(async () => {
@@ -115,6 +129,8 @@ class Main extends React.Component {
                 status
               }
             })
+            if(this.props.continuous)
+              this.justUploadTheFile(false)
             // Your sound is playing!
           } catch (error) {
             // An error occurred!
@@ -152,19 +168,20 @@ class Main extends React.Component {
   }
   uploadAudioAsync = async (uri) =>  {
     const { currentAyah } = this.props
+    const { surah, ayah, hash, session_id } = currentAyah
     console.log("Uploading " + uri);
     let apiUrl = 'https://tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
     let formData = new FormData();
-    formData.append('surah_num', currentAyah.surah);
-    formData.append('ayah_num', currentAyah.ayah);
-    formData.append('hash_string', String(currentAyah.hash));
-    formData.append('session_id', currentAyah.session_id);
+    formData.append('surah_num', surah);
+    formData.append('ayah_num', ayah);
+    formData.append('hash_string', String(hash));
+    formData.append('session_id', session_id);
     formData.append('file', {
       uri,
-      name: `recording.${fileType}`,
+      name: `${surah}_${ayah}_${hash}.${fileType}`,
       type: `audio/x-${fileType}`,
     });
 
@@ -203,7 +220,7 @@ class Main extends React.Component {
     this.props.dispatch(increaseAyahs())
   }
   handleSubmit = async () => {
-    const { recordingsCount, demographicData, passedOnBoarding } = this.props
+    const { recordingsCount, demographicData, passedOnBoarding, dispatch } = this.props
 
     let uri = await this.recording.getURI();
 
@@ -216,6 +233,7 @@ class Main extends React.Component {
 
     this.increaseRecords()
     this.increaseAyahs()
+    dispatch(increaseTotalCount())
     if(recordingsCount === 4) {
       this.props.dispatch(setpassedOnBoarding(true))
       if(!demographicData)
@@ -242,6 +260,7 @@ class Main extends React.Component {
       this.props.dispatch(setNextAyah(this.props.currentAyah))
       this.props.dispatch(setStaticAyah(previousAyah))
       this.props.dispatch(loadPreviousAyah())
+      setLastAyah(previousAyah)
     } else  {
       const { ayah, surah } = this.props.currentAyah
       const prevAyah = Number(ayah) - 1
@@ -259,6 +278,7 @@ class Main extends React.Component {
       this.props.dispatch(setPreviousAyah(this.props.currentAyah))
       this.props.dispatch(setStaticAyah(nextAyah))
       this.props.dispatch(loadNextAyah())
+      setLastAyah(nextAyah)
 
     } else {
       const { ayah, surah } = this.props.currentAyah
@@ -271,58 +291,100 @@ class Main extends React.Component {
         this.fetchSpecificAyah(surah, String(nextAyah))
     }
   }
+  handleContinuousNext = () => {
+    const { continuous } = this.props
+    if(continuous) {
+      this.recording.stopAndUnloadAsync().then(async () => {
+        Expo.Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          playsInSilentModeIOS: true,
+          playsInSilentLockedModeIOS: true,
+          shouldDuckAndroid: true,
+          interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+        }).then(() => {
+          this.justUploadTheFile(true)
+        })
+
+      })
+    }
+  }
+  justUploadTheFile = (thenRecord) => {
+    if(!thenRecord) {
+      this.setState({
+        sound: {},
+        status: {},
+        animateRecordingButton: false
+      })
+    }
+    this.recording.createNewLoadedSound()
+      .then(async ({sound, status}) => {
+        try {
+          let uri = await this.recording.getURI();
+
+          this.uploadAudioAsync(uri).then((res) => {
+            if (res.status === 201) {
+              console.log("posted")
+            }
+          }).catch(e => {
+            showError(e.message)
+          })
+
+          this.increaseRecords()
+          this.increaseAyahs()
+          this.handleNextAyah()
+          this.props.dispatch(increaseTotalCount())
+          if (thenRecord)
+            this.handleRecording()
+          else
+            this.resetRecording()
+          // Your sound is playing!
+        } catch (error) {
+          // An error occurred!
+          showError(error.message)
+        }
+      })
+  }
+  handleSwitchChange = (val) => {
+    const continuous = val === true ? true : ""
+    this.props.dispatch(setContinuous(continuous))
+  }
   render() {
     const { status, animateRecordingButton } = this.state
-    const { currentAyah, passedOnBoarding } = this.props
+    const { currentAyah, passedOnBoarding, totalAyahsCount, continuous } = this.props
     const { isRecording, isDoneRecording } = status
+    const kFormatter = num => num > 999 ? (num/1000).toFixed(1) + 'k' : num
     const NavigationButtons = () => (
-      (isDoneRecording) ?
-        <View style={styles.navigationButtons}>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={() => {
-              this.handlePreviousAyah()
-              this.resetRecording()
-            }}>
-              <View>
-                <Text style={styles.navigationButtonText}>Previous Ayah</Text>
-              </View>
-            </TouchableOpacity>
+      <View style={styles.navigationButton}>
+        <TouchableOpacity style={{ padding: 10}} onPress={() => {
+          this.handlePreviousAyah()
+          this.resetRecording()
+        }}>
+          <View>
+            <Text style={styles.navigationButtonText}>Previous Ayah</Text>
           </View>
-        </View>
-          :
-        <View style={[ styles.navigationButtons, { opacity: isRecording ? 0 : 1 } ]}>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
-              <View>
-                <Text style={styles.navigationButtonText}>Previous</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.navigationButton}>
-            <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
-            <View>
-            <Text style={styles.navigationButtonText}>Next</Text>
-            </View>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </TouchableOpacity>
+      </View>
     )
     return (
       <View style={styles.container}>
         <StatusBar />
         <Navbar style={{ height: 55 }}>
-          <View style={[NavbarStyles.right, { transform: [ { translateY: 5 } ]}]}>
+          <View style={[NavbarStyles.right, styles.right]}>
             <Button color={"transparent"} Height={50} Width={50} radius={0} onPress={Actions.profile}>
               <FontAwesome name="user" size={35} color="#676A75" />
             </Button>
           </View>
 
-          <View style={[NavbarStyles.left, { transform: [ { translateY: 5 } ]}]}>
+          <View style={[NavbarStyles.left, styles.left ]}>
             <TouchableOpacity style={{ height: 50, width: 50}} onPress={Actions.about}>
               <View style={styles.leftIconFigure}>
                 <Image source={require("../../../assets/imgs/account.png")}  />
               </View>
             </TouchableOpacity>
+            <View>
+              <Text style={styles.mainScreenCounter}>{ kFormatter(totalAyahsCount) }</Text>
+            </View>
           </View>
         </Navbar>
         <View style={[styles.container, { marginTop: 25 }]}>
@@ -347,24 +409,61 @@ class Main extends React.Component {
           </View>
           <View style={styles.recordingButtonsWrapper}>
             {
-              isDoneRecording ?
+              isDoneRecording  && !continuous ?
                 <View style={styles.wrapper}>
                   <Button onPress={this.handleRetry} Height={55} Width={55} color={"#19213B"} >
                     <Feather name={"refresh-ccw"} size={28} color={"#fff"} />
                   </Button>
-                  <Button style={{ marginTop: 50 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
+                  <Button style={{ marginTop: 25 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
                     <Text style={styles.white}>Next</Text>
                   </Button>
                 </View>
                 :
                   <View style={styles.recordButtonWrapper} >
                     <RecordingButton handleRecord={this.handleRecording}
-                                     handleStop={this.handleStopRecording} isRecording={isRecording} animateManual={animateRecordingButton} />
+                                     handleStop={() => {
+                                       if(this.state.continuous) isClickedStop = true
+                                       this.handleStopRecording()
+                                     }} isRecording={isRecording} continuous={continuous} animateManual={animateRecordingButton} />
+                    <View style={[ styles.navigationButtons, { opacity: isRecording ? 0 : 1 } ]}>
+                      <View>
+                        <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
+                          <View>
+                            <Text style={styles.navigationButtonText}>Previous</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View>
+                        <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
+                          <View>
+                            <Text style={styles.navigationButtonText}>Next</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    {
+                      isRecording && continuous ?
+                      <Button radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleContinuousNext}>
+                        <Text style={styles.white}>Next</Text>
+                      </Button> : null
+                    }
                   </View>
             }
           </View>
           {
-            passedOnBoarding ? <NavigationButtons /> : <Steps />
+            isDoneRecording && !continuous ? <NavigationButtons /> : null
+          }
+          {
+            !passedOnBoarding ? (!isRecording && !isDoneRecording ?<Steps /> : null) :
+              !isRecording && !isDoneRecording &&
+            <View style={styles.continuousSwitch}>
+              <Switch
+                value={Boolean(continuous)}
+                onValueChange={this.handleSwitchChange}
+                onTintColor={"#5ec49e"}
+              />
+              <Text style={styles.continuousSwitchText}>continuous recording</Text>
+            </View>
           }
         </View>
       </View>
@@ -380,6 +479,8 @@ export default connect(
     demographicData: state.demographicData,
     currentAyah: state.ayahs.currentAyah,
     preloadedAyahs: state.preloadedAyahs,
-    passedOnBoarding: state.data.passedOnBoarding
+    passedOnBoarding: state.data.passedOnBoarding,
+    totalAyahsCount: state.data.totalAyahsCount,
+    continuous: state.data.continuous
   })
 )(Main)

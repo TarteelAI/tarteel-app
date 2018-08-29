@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, FlatList, TouchableWithoutFeedback,TouchableHighlight, Linking, Share, Alert } from "react-native"
+import { View, Text, FlatList, TouchableWithoutFeedback, Linking, Share, Alert } from "react-native"
 import { connect } from "react-redux"
 import { Actions } from "react-native-router-flux"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
@@ -12,15 +12,14 @@ import Snackbar from '../SnackBar'
 import { restoreRecords } from "../../store/actions/index"
 import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError";
+import AnimatedCircularProgress  from '../../utils/AnimatedCircularProgress'
 
 import styles from "./styles"
 import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
-  handleDemographicDataRouting = () => {
-    Actions.demographicForm()
-  }
   state = {
+    fill: 100,
     linksList: [
       {
         text: "Change Surah / Ayah",
@@ -30,7 +29,7 @@ class Profile extends React.Component {
       {
         text: "Demographic data",
         key: 1,
-        onClick: this.handleDemographicDataRouting
+        onClick: () => Actions.demographicForm()
       },
       {
         text: "Share Tarteel",
@@ -96,10 +95,29 @@ class Profile extends React.Component {
           </View>
         </Navbar>
         <View style={styles.content}>
-          <View style={styles.ayahsCount}>
-            <Text style={styles.primaryColor}>
-              Ayas recited: { numberWithCommas(ayahsCount) }
-            </Text>
+          <View style={styles.progressContainer}>
+            <AnimatedCircularProgress
+              size={120}
+              width={3}
+              fill={75}
+              rotation={360}
+              duration={1000}
+              tintColor="#5ec49e"
+              onAnimationComplete={() => console.log('onAnimationComplete')}
+              backgroundColor="#ccc" >
+              {
+                (fill) => (
+                  <View>
+                    <Text style={styles.ayahsCount}>
+                      { String(numberWithCommas((ayahsCount))) }
+                    </Text>
+                    <Text style={styles.progressText} >
+                      Ayah recited
+                    </Text>
+                  </View>
+                )
+              }
+            </AnimatedCircularProgress>
           </View>
           <View style={styles.list}>
             <FlatList

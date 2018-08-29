@@ -39,6 +39,10 @@ export const getTotalAyahsCount = () => {
   }
 }
 
+export const increaseTotalCount = () => ({
+  type: "INCREASE_TOTAL_COUNT"
+})
+
 export const setpassedOnBoarding = (value) => {
   return (dispatch, getState) => {
     try {
@@ -47,8 +51,22 @@ export const setpassedOnBoarding = (value) => {
         type: "SET_PASSED_ON_BOARDING",
         value: Boolean(value)
       })
-    } catch (error) {
-      throw new Error(error.message)
+    } catch (e) {
+      showError(e.message);
     }
   }
+}
+
+export const setContinuous = val => {
+ return (dispatch, getState) => {
+   try {
+     AsyncStorage.setItem("continuous", String(val))
+     dispatch({
+       type: "SET_CONTINUOUS",
+       val: Boolean(val)
+     })
+   } catch (e) {
+     showError(e.message);
+   }
+ }
 }

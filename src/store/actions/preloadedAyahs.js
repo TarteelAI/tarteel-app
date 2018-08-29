@@ -7,10 +7,17 @@ export const loadPreviousAyah = () => {
     let body = {}
     const prevAyah = Number(ayah) - 1
     if(ayah == 1) {
-      const prevSurah = Number(surah) - 1
-      body = {
-        surah: String(prevSurah),
-        ayah: surahs[prevSurah].ayah
+      if(surah == 1) {
+        body = {
+          surah: String(114),
+          ayah: surahs[114].ayah
+        }
+      } else {
+        const prevSurah = Number(surah) - 1
+        body = {
+          surah: String(prevSurah),
+          ayah: surahs[prevSurah].ayah
+        }
       }
     }
     else {
@@ -38,10 +45,17 @@ export const loadNextAyah = () => {
     const nextAyah = Number(ayah) + 1
     let body = {}
     if(surahs[surah]["ayah"] == nextAyah - 1) {
-      const nextSurah = Number(surah) + 1
-      body = {
-        surah: String(nextSurah),
-        ayah: String(1)
+      if(surah == "114" && ayah == "6") {
+        body = {
+          surah: String(1),
+          ayah: String(1)
+        }
+      } else {
+        const nextSurah = Number(surah) + 1
+        body = {
+          surah: String(nextSurah),
+          ayah: String(1)
+        }
       }
     }
     else {

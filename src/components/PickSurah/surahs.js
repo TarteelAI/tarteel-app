@@ -61,7 +61,7 @@ export const surahs = {
     "english": "Spoils of war",
     "location": "booty",
     "sajda": "2",
-    "ayah": "0"
+    "ayah": "75"
   },
   "9": {
     "arabic": "التوبة",
@@ -117,7 +117,7 @@ export const surahs = {
     "english": "Stoneland",
     "location": "Rock city",
     "sajda": "Al-Hijr valley",
-    "ayah": "1"
+    "ayah": "99"
   },
   "16": {
     "arabic": "النحل",
@@ -333,7 +333,7 @@ export const surahs = {
     "english": "Council",
     "location": "Consultation",
     "sajda": "1",
-    "ayah": "0"
+    "ayah": "53"
   },
   "43": {
     "arabic": "الزخرف",
@@ -445,7 +445,7 @@ export const surahs = {
     "english": "The Event",
     "location": "The Inevitable",
     "sajda": "1",
-    "ayah": "0"
+    "ayah": "96"
   },
   "57": {
     "arabic": "الحديد",
@@ -493,7 +493,7 @@ export const surahs = {
     "english": "The congregation",
     "location": "Friday",
     "sajda": "2",
-    "ayah": "0"
+    "ayah": "11"
   },
   "63": {
     "arabic": "المنافقون",
