@@ -27,7 +27,7 @@ import {
   setNextAyah,
   setPreviousAyah
 } from "../../store/actions/preloadedAyahs";
-import {setpassedOnBoarding} from "../../store/actions";
+import {increaseTotalCount, setContinuous, setpassedOnBoarding} from "../../store/actions";
 import {setLastAyah} from "../../utils";
 
 let isClickedStop = false
@@ -42,7 +42,6 @@ class Main extends React.Component {
     phase: 0,
     fadeAnim: new Animated.Value(1),
     animateRecordingButton: false,
-    continuous: false,
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -52,7 +51,7 @@ class Main extends React.Component {
     }
   }
   handleRecording = async () => {
-    if(this.state.continuous) isClickedStop = false
+    if(this.props.continuous) isClickedStop = false
     const recordingOptions = {
       ios: {
         extension: ".wav",
@@ -97,7 +96,7 @@ class Main extends React.Component {
 
   }
   onRecordingStatusUpdate = (status) => {
-    if(this.state.continuous) {
+    if(this.props.continuous) {
       this.setState({
         status: {
           ...status,
@@ -130,6 +129,8 @@ class Main extends React.Component {
                 status
               }
             })
+            if(this.props.continuous)
+              this.justUploadTheFile(false)
             // Your sound is playing!
           } catch (error) {
             // An error occurred!
@@ -219,7 +220,7 @@ class Main extends React.Component {
     this.props.dispatch(increaseAyahs())
   }
   handleSubmit = async () => {
-    const { recordingsCount, demographicData, passedOnBoarding } = this.props
+    const { recordingsCount, demographicData, passedOnBoarding, dispatch } = this.props
 
     let uri = await this.recording.getURI();
 
@@ -232,6 +233,7 @@ class Main extends React.Component {
 
     this.increaseRecords()
     this.increaseAyahs()
+    dispatch(increaseTotalCount())
     if(recordingsCount === 4) {
       this.props.dispatch(setpassedOnBoarding(true))
       if(!demographicData)
@@ -290,7 +292,7 @@ class Main extends React.Component {
     }
   }
   handleContinuousNext = () => {
-    const { continuous } = this.state
+    const { continuous } = this.props
     if(continuous) {
       this.recording.stopAndUnloadAsync().then(async () => {
         Expo.Audio.setAudioModeAsync({
@@ -301,40 +303,57 @@ class Main extends React.Component {
           shouldDuckAndroid: true,
           interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
         }).then(() => {
-          this.recording.createNewLoadedSound()
-            .then(async ({sound, status}) => {
-              try {
-                let uri = await this.recording.getURI();
-
-                this.uploadAudioAsync(uri).then((res) => {
-                  if (res.status === 201) {
-                    console.log("posted")
-                  }
-                }).catch(e => {
-                  showError(e.message)
-                })
-
-                this.increaseRecords()
-                this.increaseAyahs()
-                this.handleNextAyah()
-                this.handleRecording()
-                // this.resetRecording()
-
-                // Your sound is playing!
-              } catch (error) {
-                // An error occurred!
-                showError(error.message)
-              }
-            })
+          this.justUploadTheFile(true)
         })
 
       })
     }
   }
+  justUploadTheFile = (thenRecord) => {
+    if(!thenRecord) {
+      this.setState({
+        sound: {},
+        status: {},
+        animateRecordingButton: false
+      })
+    }
+    this.recording.createNewLoadedSound()
+      .then(async ({sound, status}) => {
+        try {
+          let uri = await this.recording.getURI();
+
+          this.uploadAudioAsync(uri).then((res) => {
+            if (res.status === 201) {
+              console.log("posted")
+            }
+          }).catch(e => {
+            showError(e.message)
+          })
+
+          this.increaseRecords()
+          this.increaseAyahs()
+          this.handleNextAyah()
+          this.props.dispatch(increaseTotalCount())
+          if (thenRecord)
+            this.handleRecording()
+          else
+            this.resetRecording()
+          // Your sound is playing!
+        } catch (error) {
+          // An error occurred!
+          showError(error.message)
+        }
+      })
+  }
+  handleSwitchChange = (val) => {
+    const continuous = val === true ? true : ""
+    this.props.dispatch(setContinuous(continuous))
+  }
   render() {
-    const { status, animateRecordingButton, continuous } = this.state
-    const { currentAyah, passedOnBoarding } = this.props
+    const { status, animateRecordingButton } = this.state
+    const { currentAyah, passedOnBoarding, totalAyahsCount, continuous } = this.props
     const { isRecording, isDoneRecording } = status
+    const kFormatter = num => num > 999 ? (num/1000).toFixed(1) + 'k' : num
     const NavigationButtons = () => (
       <View style={styles.navigationButton}>
         <TouchableOpacity style={{ padding: 10}} onPress={() => {
@@ -351,18 +370,21 @@ class Main extends React.Component {
       <View style={styles.container}>
         <StatusBar />
         <Navbar style={{ height: 55 }}>
-          <View style={[NavbarStyles.right, { transform: [ { translateY: 5 } ]}]}>
+          <View style={[NavbarStyles.right, styles.right]}>
             <Button color={"transparent"} Height={50} Width={50} radius={0} onPress={Actions.profile}>
               <FontAwesome name="user" size={35} color="#676A75" />
             </Button>
           </View>
 
-          <View style={[NavbarStyles.left, { transform: [ { translateY: 5 } ]}]}>
+          <View style={[NavbarStyles.left, styles.left ]}>
             <TouchableOpacity style={{ height: 50, width: 50}} onPress={Actions.about}>
               <View style={styles.leftIconFigure}>
                 <Image source={require("../../../assets/imgs/account.png")}  />
               </View>
             </TouchableOpacity>
+            <View>
+              <Text style={styles.mainScreenCounter}>{ kFormatter(totalAyahsCount) }</Text>
+            </View>
           </View>
         </Navbar>
         <View style={[styles.container, { marginTop: 25 }]}>
@@ -432,12 +454,12 @@ class Main extends React.Component {
             isDoneRecording && !continuous ? <NavigationButtons /> : null
           }
           {
-            !passedOnBoarding ? <Steps /> :
+            !passedOnBoarding ? (!isRecording && !isDoneRecording ?<Steps /> : null) :
               !isRecording && !isDoneRecording &&
             <View style={styles.continuousSwitch}>
               <Switch
-                value={continuous}
-                onValueChange={(val) => this.setState({ continuous: val }) }
+                value={Boolean(continuous)}
+                onValueChange={this.handleSwitchChange}
                 onTintColor={"#5ec49e"}
               />
               <Text style={styles.continuousSwitchText}>continuous recording</Text>
@@ -457,6 +479,8 @@ export default connect(
     demographicData: state.demographicData,
     currentAyah: state.ayahs.currentAyah,
     preloadedAyahs: state.preloadedAyahs,
-    passedOnBoarding: state.data.passedOnBoarding
+    passedOnBoarding: state.data.passedOnBoarding,
+    totalAyahsCount: state.data.totalAyahsCount,
+    continuous: state.data.continuous
   })
 )(Main)

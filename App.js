@@ -19,7 +19,7 @@ import {getAyahs} from "./src/store/actions/ayahs";
 import ChangeAyah from "./src/components/ChangeAyah";
 import PickSurah from "./src/components/PickSurah";
 import PickAyah from "./src/components/PickAyah";
-import {getTotalAyahsCount, setpassedOnBoarding} from "./src/store/actions";
+import {getTotalAyahsCount, setContinuous, setpassedOnBoarding} from "./src/store/actions";
 
 const store = configStore()
 
@@ -36,9 +36,11 @@ export default class App extends React.Component {
     store.dispatch(getAyahs())
     store.dispatch(getTotalAyahsCount())
     try {
-      const { recordsCount, passedOnBoarding, passedOnBoardingScreen } = fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen"]))
+      const { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous } =
+        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous"]))
       this.setState({ loading: false, passedOnBoardingScreen })
       store.dispatch(setpassedOnBoarding(passedOnBoarding))
+      store.dispatch(setContinuous(continuous))
       store.dispatch(setRecords(Number(recordsCount)))
     }
     catch(e) {

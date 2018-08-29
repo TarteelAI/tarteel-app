@@ -21,11 +21,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "io.tarteel.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "You need to enable the audio recording in order to record your recitation."
+      }
     },
-    "ios": {
-     "bundleIdentifier": "io.tarteel.app"
-   },
    "android": {
      "package": "io.tarteel.app"
    }

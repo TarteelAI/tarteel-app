@@ -10,20 +10,22 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   right: {
-    transform: [
-      { translateY: 15 }
-    ]
+    transform: [ { translateY: 5 } ]
   },
   left: {
-    transform: [
-      { translateY: 15 }
-    ]
+    transform: [ { translateY: 5 } ],
+    display: "flex",
+    flexDirection: "row",
+  },
+  mainScreenCounter: {
+    fontSize: 18,
+    color: "rgba(57, 62, 78, 0.76)",
+    fontWeight: "bold"
   },
   ayahWrapper: {
     flex: 2,
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
-    paddingTop: 16,
   },
   ayahText: {
     textAlign: "center",
@@ -107,5 +109,5 @@ export default StyleSheet.create({
   },
   continuousSwitchText: {
     color: "#A5AAB2"
-  }
+  },
 });

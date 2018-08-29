@@ -1,6 +1,7 @@
 const initState = {
   totalAyahsCount: 0,
-  passedOnBoarding: ""
+  passedOnBoarding: "",
+  continuous: ""
 }
 
 export default (state = initState, action) => {
@@ -10,10 +11,20 @@ export default (state = initState, action) => {
         ...state,
         totalAyahsCount: action.count
       })
+    case "INCREASE_TOTAL_COUNT":
+      return ({
+        ...state,
+        totalAyahsCount: state.totalAyahsCount + 1
+      })
     case "SET_PASSED_ON_BOARDING":
       return ({
         ...state,
         passedOnBoarding: action.value
+      })
+    case "SET_CONTINUOUS":
+      return ({
+        ...state,
+        continuous: action.val
       })
     default:
       return state
