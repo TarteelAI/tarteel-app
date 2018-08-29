@@ -19,7 +19,7 @@ export default StyleSheet.create({
   },
   mainScreenCounter: {
     fontSize: 18,
-    color: "rgba(57, 62, 78, 0.76)",
+    color: "#5ec49e",
     fontWeight: "bold"
   },
   ayahWrapper: {

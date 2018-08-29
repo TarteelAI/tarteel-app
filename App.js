@@ -29,6 +29,7 @@ export default class App extends React.Component {
     await Font.loadAsync({
       'Arial': require('./assets/fonts/arial.ttf'),
       'Proxima-Nova-Alt-Regular': require('./assets/fonts/Proxima-Nova-Alt-Regular.ttf'),
+      'Proxima-Nova-Alt-SemiBold': require('./assets/fonts/Proxima-Nova-Alt-SemiBold.ttf'),
       'Geeza': require('./assets/fonts/Geeza-Pro.ttf'),
       'Uthmanic': require('./assets/fonts/Uthmanic.otf'),
     });

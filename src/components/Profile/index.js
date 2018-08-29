@@ -78,6 +78,7 @@ class Profile extends React.Component {
   render() {
     const { linksList } = this.state
     const { ayahsCount } = this.props
+    const currentTarget = ayahsCount > 100 ? 1000 : ayahsCount > 1000 ? 10000 : 100
     return (
       <View style={styles.container}>
         <StatusBar />
@@ -100,7 +101,7 @@ class Profile extends React.Component {
             <AnimatedCircularProgress
               size={120}
               width={3}
-              fill={75}
+              fill={ayahsCount/currentTarget*100}
               rotation={360}
               duration={1000}
               tintColor="#5ec49e"
@@ -109,11 +110,14 @@ class Profile extends React.Component {
               {
                 (fill) => (
                   <View>
+                    <Text style={styles.progressText} >
+                      Ayahs
+                    </Text>
                     <Text style={styles.ayahsCount}>
                       { String(numberWithCommas((ayahsCount))) }
                     </Text>
-                    <Text style={styles.progressText} >
-                      Ayah recited
+                    <Text style={styles.progressNote} >
+                      { `/${currentTarget}` }
                     </Text>
                   </View>
                 )

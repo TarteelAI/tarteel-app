@@ -42,19 +42,28 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   titleText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "Proxima-Nova-Alt-Regular",
     fontWeight: "400",
     textAlign: 'center'
   },
+  textContainer: {
+    marginTop: height * 0.05
+  },
   text: {
     color: '#a5aab2',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '400',
-    textAlign: "center",
+    textAlign: "left",
     fontFamily: "Proxima-Nova-Alt-Regular",
     marginVertical: 10,
     paddingHorizontal: 20
+  },
+  aboutTitle: {
+    fontSize: 18,
+    color: "#7a7e7b",
+    paddingHorizontal: 20,
+    fontFamily: "Proxima-Nova-Alt-SemiBold",
   },
   white: {
     color: "#fff"
@@ -62,5 +71,25 @@ export default StyleSheet.create({
   bottomButtons: {
     alignItems: "center",
     marginVertical: 50
+  },
+  list: {
+    paddingHorizontal: 20,
+    marginBottom: 20
+  },
+  listItem: {
+    paddingVertical: 5,
+    color: '#878a91',
+    fontSize: 16,
+    fontWeight: '400',
+    textAlign: "left",
+    fontFamily: "Proxima-Nova-Alt-Regular",
+  },
+  link: {
+    paddingVertical: 10,
+    paddingLeft: 10,
+  },
+  linkText: {
+    color: "#5EC49E",
+    fontWeight: "bold"
   }
 })

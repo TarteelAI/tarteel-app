@@ -32,13 +32,19 @@ export default StyleSheet.create({
     marginTop: height * 0.03,
   },
   ayahsCount: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#485364",
     textAlign: "center"
   },
   progressText: {
     color: "#485364",
+    textAlign: "center",
+    fontSize: 18,
+    fontFamily: "Proxima-Nova-Alt-SemiBold",
+  },
+  progressNote: {
+    color: "gray",
     textAlign: "center"
   }
 })

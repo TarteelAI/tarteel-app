@@ -14,6 +14,7 @@ export const restoreRecords = () => {
       dispatch(setDemographicData({}))
       setPassedOnBoardingScreen("")
       dispatch(setpassedOnBoarding(""))
+      dispatch(setContinuous(""))
       setLastAyah({})
       Actions.onBoarding()
     }
