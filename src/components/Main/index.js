@@ -396,7 +396,7 @@ class Main extends React.Component {
                 </Text>
             }
             {
-              Boolean(currentAyah.ayah) && 
+              Boolean(currentAyah.ayah) &&
                 <TouchableOpacity onPress={() => { Actions.pickayah({currentAyah}) }}>
                   <View>
                     <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/>
@@ -460,7 +460,7 @@ class Main extends React.Component {
               <Switch
                 value={Boolean(continuous)}
                 onValueChange={this.handleSwitchChange}
-                onTintColor={"#5ec49e"}
+                onTintColor={"#408F84"}
               />
               <Text style={styles.continuousSwitchText}>continuous recording</Text>
             </View>
