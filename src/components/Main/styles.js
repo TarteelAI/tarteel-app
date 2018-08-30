@@ -13,13 +13,13 @@ export default StyleSheet.create({
     transform: [ { translateY: 5 } ]
   },
   left: {
-    transform: [ { translateY: 5 } ],
+    transform: [ { translateY: 8 } ],
     display: "flex",
     flexDirection: "row",
   },
   mainScreenCounter: {
     fontSize: 18,
-    color: "#5ec49e",
+    color: "#393e4e",
     fontWeight: "bold"
   },
   ayahWrapper: {
