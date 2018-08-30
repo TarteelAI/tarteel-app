@@ -80,7 +80,7 @@ export default StyleSheet.create({
   },
   recordingButtonsWrapper: {
     maxHeight: 250,
-    marginBottom: 35,
+    marginBottom: 30,
   },
   navigationButtons: {
     top: -55,
@@ -108,6 +108,8 @@ export default StyleSheet.create({
     bottom: height * 0.04,
   },
   continuousSwitchText: {
-    color: "#A5AAB2"
+    color: "#A5AAB2",
+    fontSize: 13,
+    marginTop: 7
   },
 });
