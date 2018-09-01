@@ -109,13 +109,12 @@ const buttonWidth = 65
 const stylesFactory = (props) => StyleSheet.create({
   container: {
     width: buttonWidth * 1.75,
-    height: buttonHeight  * 2,
+    height: buttonHeight  * 1.8,
     justifyContent: "center",
     alignItems: "center",
     transform: [
-      {translateY: 30}
+      {translateY: 40}
     ],
-    // backgroundColor: "green",
     zIndex: 5,
   },
   wrapper: {

@@ -42,6 +42,10 @@ class Main extends React.Component {
     phase: 0,
     fadeAnim: new Animated.Value(1),
     animateRecordingButton: false,
+    currentImage: {
+      height: null,
+      width: null
+    }
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -159,6 +163,11 @@ class Main extends React.Component {
       showError(e.message)
     }
   }
+  componentWillReceiveProps(nextProps) {
+    if(this.props.currentAyah.hash !== nextProps.currentAyah.hash) {
+      this.handleImageSize(nextProps.currentAyah.image_url)
+    }
+  }
   fetchRandomAyah = () => {
     this.props.dispatch(setCurrentAyah())
     this.props.dispatch(loadRandomAyah())
@@ -203,6 +212,19 @@ class Main extends React.Component {
       status: {},
       animateRecordingButton: false
     })
+  }
+  handleImageSize = (uri) => {
+    const { currentAyah } = this.props
+    Image.getSize("https://tarteel.io" + uri, (width, height) => {
+      this.setState({
+        currentImage: {
+          height,
+          width
+        }
+      });
+    }, (e) => {
+      console.log(e)
+    });
   }
   handleRetry = () => {
     this.recording = null
@@ -350,7 +372,7 @@ class Main extends React.Component {
     this.props.dispatch(setContinuous(continuous))
   }
   render() {
-    const { status, animateRecordingButton } = this.state
+    const { status, animateRecordingButton, currentImage } = this.state
     const { currentAyah, passedOnBoarding, totalAyahsCount, continuous } = this.props
     const { isRecording, isDoneRecording } = status
     const kFormatter = num => num > 999 ? (num/1000).toFixed(1) + 'k' : num
@@ -391,14 +413,13 @@ class Main extends React.Component {
           <View style={styles.ayahWrapper}>
             {
               !currentAyah.line ? <Loader /> :
-                <Text style={styles.ayahText}>
-                  { currentAyah.line }
-                </Text>
+                <Image source={{uri: "https://tarteel.io" + currentAyah.image_url}}
+                       style={[styles.ayahImage, currentImage.height > 300 ? {resizeMode: "stretch"} : {height: currentImage.height}]} />
             }
             {
               Boolean(currentAyah.ayah) &&
                 <TouchableOpacity onPress={() => { Actions.pickayah({currentAyah}) }}>
-                  <View>
+                  <View style={{ paddingHorizontal: 15, justifyContent: "center"}}>
                     <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/>
                     <Text style={[styles.ayahText, styles.ayahPositionText]}>
                       [{ currentAyah.surah } : { currentAyah.ayah }]
