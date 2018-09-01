@@ -1,5 +1,7 @@
+import { Image } from "react-native"
 import {surahs} from "../../components/PickSurah/surahs";
 import showError from "../../utils/showError";
+
 
 export const loadPreviousAyah = () => {
   return (dispatch, getState) => {
@@ -30,6 +32,7 @@ export const loadPreviousAyah = () => {
     fetchData(body)
       .then(json => {
         dispatch(setPreviousAyah(json))
+        Image.prefetch("https://tarteel.io" + json.image_url)
       })
       .catch(e => {
         console.log(e.message)
@@ -68,6 +71,7 @@ export const loadNextAyah = () => {
     fetchData(body)
       .then(json => {
         dispatch(setNextAyah(json))
+        Image.prefetch("https://tarteel.io" + json.image_url)
       })
       .catch(e => {
         console.log(e.message)
@@ -99,17 +103,4 @@ export const setPreviousAyah = (ayah) => {
     type: "SET_PREVIOUS_AYAH",
     ayah
   })
-}
-
-export const loadRandomAyah = () => {
-  return (dispatch, getState) => {
-    fetch("https://tarteel.io/get_ayah")
-      .then(res => res.json())
-      .then(json => {
-        dispatch(setNextAyah(json))
-      })
-      .catch(e => {
-        showError(e.message)
-      })
-  }
 }

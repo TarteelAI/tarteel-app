@@ -15,7 +15,7 @@ import Steps from "../Steps"
 import RecordingButton from "../RecordingButton"
 
 import { increaseRecords, setRecords } from "../../store/actions/records"
-import {increaseAyahs, setCurrentAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
+import {increaseAyahs, setRandomAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
 import showError from "../../utils/showError"
 import { surahs } from "../PickSurah/surahs";
 
@@ -23,12 +23,11 @@ import styles from "./styles"
 import {
   loadNextAyah,
   loadPreviousAyah,
-  loadRandomAyah,
   setNextAyah,
   setPreviousAyah
 } from "../../store/actions/preloadedAyahs";
 import {increaseTotalCount, setContinuous, setpassedOnBoarding} from "../../store/actions";
-import {setLastAyah} from "../../utils";
+import {numberWithCommas, setLastAyah} from "../../utils";
 
 let isClickedStop = false
 
@@ -169,8 +168,7 @@ class Main extends React.Component {
     }
   }
   fetchRandomAyah = () => {
-    this.props.dispatch(setCurrentAyah())
-    this.props.dispatch(loadRandomAyah())
+    this.props.dispatch(setRandomAyah())
   }
   fetchSpecificAyah = (surah, ayah) => {
     this.props.dispatch(setSpecificAyah(String(surah), String(ayah)))
@@ -267,12 +265,7 @@ class Main extends React.Component {
 
     }
     else {
-      if(passedOnBoarding){
-        this.handleNextAyah()
-      }
-      else {
-        this.fetchRandomAyah()
-      }
+      this.handleNextAyah()
       this.resetRecording()
     }
   }
@@ -405,7 +398,7 @@ class Main extends React.Component {
               </View>
             </TouchableOpacity>
             <View>
-              <Text style={styles.mainScreenCounter}>{ kFormatter(totalAyahsCount) }</Text>
+              <Text style={styles.mainScreenCounter}>{ numberWithCommas(totalAyahsCount - 1000) }</Text>
             </View>
           </View>
         </Navbar>

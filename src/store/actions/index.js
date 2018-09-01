@@ -3,7 +3,7 @@ import { setDemographicData } from "./demographicData"
 import {setPassedOnBoardingScreen, setLastAyah} from "../../utils/index"
 import { Actions } from "react-native-router-flux"
 import showError from "../../utils/showError"
-import {setAyahs} from "./ayahs";
+import {setAyahs, setRandomAyah} from "./ayahs";
 import {AsyncStorage} from "react-native";
 
 export const restoreRecords = () => {

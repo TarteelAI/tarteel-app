@@ -28,7 +28,8 @@
       }
     },
    "android": {
-     "package": "io.tarteel.app"
+     "package": "io.tarteel.app",
+     "permissions": []
    }
   }
 }
