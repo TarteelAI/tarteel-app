@@ -67,7 +67,6 @@ export const loadNextAyah = () => {
         ayah: String(nextAyah)
       }
     }
-
     fetchData(body)
       .then(json => {
         dispatch(setNextAyah(json))
@@ -81,6 +80,7 @@ export const loadNextAyah = () => {
 }
 
 const fetchData = (body) => {
+  console.log(body)
   return fetch("https://tarteel.io/get_ayah/", {
     method: "POST",
     body: JSON.stringify(body),

@@ -4,6 +4,7 @@ import NavbarStyles from "../Navbar/styles";
 import {Actions} from "react-native-router-flux";
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { connect } from "react-redux"
+import I18n from "ex-react-native-i18n";
 
 import Button from "../Button";
 import Navbar from "../Navbar";
@@ -63,7 +64,7 @@ class PickAyah extends React.Component {
             </Button>
           </View>
           <View >
-            <Text style={NavbarStyles.center} >{ surahs[currentSurah].latin || "Pick an Ayah" }</Text>
+            <Text style={NavbarStyles.center} >{ surahs[currentSurah].latin || I18n.t("ayah-picker-title")  }</Text>
           </View>
         </Navbar>
         <View style={styles.content}>
@@ -73,7 +74,7 @@ class PickAyah extends React.Component {
               onChangeText={(text) => this.setState({searchText: text})}
               value={this.state.text}
               underlineColorAndroid={"transparent"}
-              placeholder={"Search"}
+              placeholder={I18n.t("ayah-picker-search-placeholder")}
               placeholderTextColor={"gray"}
               returnKeyType={"search"}
             />

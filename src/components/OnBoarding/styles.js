@@ -35,7 +35,8 @@ export default StyleSheet.create({
     fontSize: 18,
     fontFamily: "Proxima-Nova-Alt-Regular",
     fontWeight: "400",
-    marginTop: 75
+    marginTop: 75,
+    lineHeight: 25
   },
   text: {
     color: '#a5aab2',

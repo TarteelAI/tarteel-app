@@ -1,20 +1,18 @@
 import React from "react"
 import { TouchableWithoutFeedback, Animated, StyleSheet } from "react-native"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { connect } from "react-redux"
 
-export default class RecordingButton extends React.Component {
+class RecordingButton extends React.Component {
   animatedValue = new Animated.Value(1)
   animatedBorder = new Animated.Value(0.75)
-  animatedOverlay = new Animated.Value(0)
   startAnimation = () => {
     this.scaleUp()
     this.scaleBorderUp()
-    this.scaleOverlayUp()
   }
   resetAnimation = () => {
     this.scaleDown()
     this.scaleBorderDown()
-    this.scaleOverlayDown()
   }
   scaleUp = () => {
     Animated.spring(this.animatedValue,
@@ -48,22 +46,6 @@ export default class RecordingButton extends React.Component {
       }
     ).start()
   }
-  scaleOverlayUp = () => {
-    Animated.spring(this.animatedOverlay,
-      {
-        toValue: 1,
-      }
-    ).start()
-  }
-  scaleOverlayDown = () => {
-    Animated.spring(this.animatedOverlay,
-      {
-        toValue: 0,
-        friction: 3,
-        tension: 40
-      }
-    ).start()
-  }
   handleRecord = () => {
     this.startAnimation()
     this.props.handleRecord()
@@ -78,16 +60,13 @@ export default class RecordingButton extends React.Component {
     }
   }
   render() {
-    const { isRecording } = this.props
+    const { isRecording, continuous } = this.props
     const styles = stylesFactory(this.props)
     const animatedStyle = {
       transform: [{ scale: this.animatedValue }]
     }
     const animatedBordered= {
       transform: [{ scale: this.animatedBorder }]
-    }
-    const animatedOverlay= {
-      transform: [{ scale: this.animatedOverlay }]
     }
     return (
       <TouchableWithoutFeedback {...this.props} onPress={!isRecording ? this.handleRecord : this.handleStop }>
@@ -113,7 +92,7 @@ const stylesFactory = (props) => StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     transform: [
-      {translateY: 40}
+      {translateY: props.isRecording ? 20 : 40}
     ],
     zIndex: 5,
   },
@@ -152,3 +131,9 @@ const stylesFactory = (props) => StyleSheet.create({
     position: "absolute",
   }
 })
+
+export default connect(
+  state => ({
+    continuous: state.data.continuous
+  })
+)(RecordingButton)

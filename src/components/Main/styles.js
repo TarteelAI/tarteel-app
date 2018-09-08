@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { height, width } = Dimensions.get("window")
 
-export default StyleSheet.create({
+export default props => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -82,8 +82,8 @@ export default StyleSheet.create({
     top: -40,
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 225,
-    left: -10,
+    width: props.locale === "ar" ? 250 : 225,
+    left: props.locale === "ar" ? -4 : -10,
   },
   navigationButton: {
     bottom: 25,
@@ -108,4 +108,31 @@ export default StyleSheet.create({
     fontSize: 13,
     marginTop: 7
   },
+  tooltipContainer: {
+    flex: 1,
+  },
+  arrow: {
+    position: 'absolute',
+    borderColor: 'transparent',
+    borderWidth: 6,
+  },
+  tooltip: {
+    position: 'absolute',
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  bottomBar: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  tooltipButton: {
+    paddingVertical: 10
+  },
+  tooltipButtonText: {
+    color: "#5ec49e"
+  }
 });

@@ -2,7 +2,7 @@ import {Dimensions, StyleSheet} from "react-native"
 
 const { width, height } = Dimensions.get("window")
 
-export default StyleSheet.create({
+export default (props) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -45,16 +45,17 @@ export default StyleSheet.create({
     fontSize: 16,
     fontFamily: "Proxima-Nova-Alt-Regular",
     fontWeight: "400",
-    textAlign: 'center'
+    textAlign: 'center',
+    lineHeight: 25
   },
   textContainer: {
     marginTop: height * 0.05
   },
   text: {
-    color: '#a5aab2',
+    color: '#878a91',
     fontSize: 16,
     fontWeight: '400',
-    textAlign: "left",
+    textAlign: props.locale === "ar" ? "right" : "left",
     fontFamily: "Proxima-Nova-Alt-Regular",
     marginVertical: 10,
     paddingHorizontal: 20
@@ -81,7 +82,7 @@ export default StyleSheet.create({
     color: '#878a91',
     fontSize: 16,
     fontWeight: '400',
-    textAlign: "left",
+    textAlign: props.locale === "ar" ? "right" : "left",
     fontFamily: "Proxima-Nova-Alt-Regular",
   },
   link: {
@@ -90,6 +91,7 @@ export default StyleSheet.create({
   },
   linkText: {
     color: "#5EC49E",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    textAlign: props.locale === "ar" ? "right" : "left",
   }
 })

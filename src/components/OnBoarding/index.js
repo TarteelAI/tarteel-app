@@ -4,8 +4,8 @@ import {View, Text, StatusBar, Image, Linking} from "react-native"
 import { Actions } from "react-native-router-flux"
 import { connect }  from "react-redux"
 import Expo from "expo";
+import I18n from "ex-react-native-i18n"
 
-// import StatusBar from "../StatusBar";
 import Button from "../Button"
 import Snackbar from '../SnackBar'
 import {setPassedOnBoardingScreen} from "../../utils";
@@ -71,10 +71,10 @@ class OnBoarding extends React.Component {
                 <Image  source={require("../../../assets/imgs/Logo.png")} />
               </View>
               <Text style={styles.title}>
-                Welcome to Tarteel
+                { I18n.t("onboarding-first-screen-title") }
               </Text>
               <Text style={styles.text}>
-                Thank you for helping us build the world's first public, open-source dataset of Quran recitations by ordinary people, like you and me. Tarteel is an initiative to encourage machine learning applications based on recitations of the Quran (such as hifz correction).
+                { I18n.t("onboarding-first-screen-text") }
               </Text>
             </View>
             <View style={styles.slide2}>
@@ -82,10 +82,10 @@ class OnBoarding extends React.Component {
                 <Image source={require("../../../assets/imgs/recorder.png")} />
               </View>
               <Text style={styles.title}>
-                Voice Recording
+                { I18n.t("onboarding-second-screen-title") }
               </Text>
               <Text style={styles.text}>
-                You need to enable the audio recording in order to record your recitation.
+                { I18n.t("onboarding-second-screen-text") }
               </Text>
             </View>
             <View style={styles.slide3}>
@@ -93,10 +93,10 @@ class OnBoarding extends React.Component {
                 <Image source={require("../../../assets/imgs/privacy.png")} />
               </View>
               <Text style={styles.title}>
-                Privacy Policy
+                { I18n.t("onboarding-third-screen-title") }
               </Text>
               <Text style={styles.text}>
-                As part of making an public dataset, we want to let you know that your recordings will be released. You can read our privacy policy <Text style={styles.link} onPress={this.handleLink}>here</Text>
+                { I18n.t("onboarding-third-screen-text") } <Text style={styles.link} onPress={this.handleLink}>{ I18n.t("onboarding-third-screen-text-link") }</Text>
               </Text>
             </View>
           </Swiper>
@@ -104,7 +104,9 @@ class OnBoarding extends React.Component {
             <Button radius={23} Width={150} Height={40} color={"#58BCB0"} onPress={this.goNext}>
               <Text style={styles.white}>
                 {
-                  stage === 1 ? "Enable" : stage === 2 ? "I Agree" : "Next"
+                  stage === 1 ? I18n.t("onboarding-second-screen-button-text") :
+                    stage === 2 ? I18n.t("onboarding-third-screen-button-text") :
+                      I18n.t("onboarding-first-screen-button-text")
                 }
               </Text>
             </Button>

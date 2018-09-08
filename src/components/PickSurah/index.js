@@ -3,6 +3,7 @@ import {Text, View, FlatList, TextInput, TouchableWithoutFeedback} from "react-n
 import NavbarStyles from "../Navbar/styles";
 import {Actions} from "react-native-router-flux";
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import I18n from "ex-react-native-i18n"
 
 import Button from "../Button";
 import Navbar from "../Navbar";
@@ -44,7 +45,7 @@ export default class PickSurah extends React.Component {
             </Button>
           </View>
           <View >
-            <Text style={NavbarStyles.center} >Pick Surah</Text>
+            <Text style={NavbarStyles.center} >{ I18n.t("surah-picker-title") }</Text>
           </View>
         </Navbar>
         <View style={styles.content}>
@@ -54,7 +55,7 @@ export default class PickSurah extends React.Component {
               onChangeText={(text) => this.setState({searchText: text})}
               value={this.state.text}
               underlineColorAndroid={"transparent"}
-              placeholder={"Search"}
+              placeholder={I18n.t("surah-picker-search-placeholder")}
               placeholderTextColor={"gray"}
               returnKeyType={"search"}
             />

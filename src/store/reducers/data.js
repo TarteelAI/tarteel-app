@@ -26,6 +26,11 @@ export default (state = initState, action) => {
         ...state,
         continuous: action.val
       })
+    case "SET_LOCALE":
+      return({
+        ...state,
+        locale: action.locale
+      })
     default:
       return state
   }
