@@ -1793,6 +1793,10 @@ eventemitter3@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
 
+ex-react-native-i18n@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ex-react-native-i18n/-/ex-react-native-i18n-0.0.4.tgz#a6685f87652880b6a7e5a6b7c81c40253a81103f"
+
 exec-sh@^0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.2.2.tgz#2a5e7ffcbd7d0ba2755bdecb16e5a427dfbdec36"

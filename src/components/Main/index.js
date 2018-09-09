@@ -1,34 +1,35 @@
 import React from "react"
-import { View, Text, Animated, Switch, AsyncStorage, TouchableWithoutFeedback, Image, TouchableOpacity } from "react-native";
+import { View, Text, Animated, Switch, AsyncStorage, Image, TouchableOpacity } from "react-native";
 import Expo from "expo"
 import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
 import { Actions } from "react-native-router-flux"
+import I18n from 'ex-react-native-i18n'
 
 import Button from "../Button/index"
 import Navbar from "../Navbar";
 import NavbarStyles  from "../Navbar/styles"
 import StatusBar from "../StatusBar";
 import Loader from "../Loader"
+import Line from "../Loader/Line"
 import Snackbar from '../SnackBar'
 import Steps from "../Steps"
 import RecordingButton from "../RecordingButton"
 
-import { increaseRecords, setRecords } from "../../store/actions/records"
-import {increaseAyahs, setCurrentAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
+import { increaseRecords } from "../../store/actions/records"
+import {increaseAyahs, setRandomAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
 import showError from "../../utils/showError"
 import { surahs } from "../PickSurah/surahs";
 
-import styles from "./styles"
+import stylesFactory from "./styles"
 import {
   loadNextAyah,
   loadPreviousAyah,
-  loadRandomAyah,
   setNextAyah,
   setPreviousAyah
 } from "../../store/actions/preloadedAyahs";
 import {increaseTotalCount, setContinuous, setpassedOnBoarding} from "../../store/actions";
-import {setLastAyah} from "../../utils";
+import {numberWithCommas, setLastAyah} from "../../utils";
 
 let isClickedStop = false
 
@@ -42,6 +43,10 @@ class Main extends React.Component {
     phase: 0,
     fadeAnim: new Animated.Value(1),
     animateRecordingButton: false,
+    currentImage: {
+      height: null,
+      width: null
+    }
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
     const { Permissions } = Expo;
@@ -159,16 +164,21 @@ class Main extends React.Component {
       showError(e.message)
     }
   }
+  componentWillReceiveProps(nextProps) {
+    if(this.props.currentAyah.hash !== nextProps.currentAyah.hash) {
+      this.handleImageSize(nextProps.currentAyah.image_url)
+    }
+  }
   fetchRandomAyah = () => {
-    this.props.dispatch(setCurrentAyah())
-    this.props.dispatch(loadRandomAyah())
+    this.props.dispatch(setRandomAyah())
   }
   fetchSpecificAyah = (surah, ayah) => {
     this.props.dispatch(setSpecificAyah(String(surah), String(ayah)))
   }
   uploadAudioAsync = async (uri) =>  {
-    const { currentAyah } = this.props
+    const { currentAyah, continuous } = this.props
     const { surah, ayah, hash, session_id } = currentAyah
+    const recitation_mode = continuous ? "continuous" : "discrete"
     console.log("Uploading " + uri);
     let apiUrl = 'https://tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
@@ -179,6 +189,7 @@ class Main extends React.Component {
     formData.append('ayah_num', ayah);
     formData.append('hash_string', String(hash));
     formData.append('session_id', session_id);
+    formData.append('recitation_mode', recitation_mode);
     formData.append('file', {
       uri,
       name: `${surah}_${ayah}_${hash}.${fileType}`,
@@ -203,6 +214,19 @@ class Main extends React.Component {
       status: {},
       animateRecordingButton: false
     })
+  }
+  handleImageSize = (uri) => {
+    const { currentAyah } = this.props
+    Image.getSize("https://tarteel.io" + uri, (width, height) => {
+      this.setState({
+        currentImage: {
+          height,
+          width
+        }
+      });
+    }, (e) => {
+      console.log(e)
+    });
   }
   handleRetry = () => {
     this.recording = null
@@ -245,12 +269,7 @@ class Main extends React.Component {
 
     }
     else {
-      if(passedOnBoarding){
-        this.handleNextAyah()
-      }
-      else {
-        this.fetchRandomAyah()
-      }
+      this.handleNextAyah()
       this.resetRecording()
     }
   }
@@ -350,9 +369,10 @@ class Main extends React.Component {
     this.props.dispatch(setContinuous(continuous))
   }
   render() {
-    const { status, animateRecordingButton } = this.state
+    const { status, animateRecordingButton, currentImage } = this.state
     const { currentAyah, passedOnBoarding, totalAyahsCount, continuous } = this.props
     const { isRecording, isDoneRecording } = status
+    const styles = stylesFactory(this.props)
     const kFormatter = num => num > 999 ? (num/1000).toFixed(1) + 'k' : num
     const NavigationButtons = () => (
       <View style={styles.navigationButton}>
@@ -361,7 +381,7 @@ class Main extends React.Component {
           this.resetRecording()
         }}>
           <View>
-            <Text style={styles.navigationButtonText}>Previous Ayah</Text>
+            <Text style={styles.navigationButtonText}>{ I18n.t("previous-ayah") }</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -383,7 +403,10 @@ class Main extends React.Component {
               </View>
             </TouchableOpacity>
             <View>
-              <Text style={styles.mainScreenCounter}>{ kFormatter(totalAyahsCount) }</Text>
+              {
+                !totalAyahsCount ? <Line /> :
+                  <Text style={styles.mainScreenCounter}>{ numberWithCommas(totalAyahsCount - 1000) }</Text>
+              }
             </View>
           </View>
         </Navbar>
@@ -391,14 +414,13 @@ class Main extends React.Component {
           <View style={styles.ayahWrapper}>
             {
               !currentAyah.line ? <Loader /> :
-                <Text style={styles.ayahText}>
-                  { currentAyah.line }
-                </Text>
+                <Image source={{uri: "https://tarteel.io" + currentAyah.image_url}}
+                       style={[styles.ayahImage, currentImage.height > 300 ? {resizeMode: "stretch"} : {height: currentImage.height}]} />
             }
             {
               Boolean(currentAyah.ayah) &&
                 <TouchableOpacity onPress={() => { Actions.pickayah({currentAyah}) }}>
-                  <View>
+                  <View style={{ paddingHorizontal: 15, justifyContent: "center"}}>
                     <MaterialIcons style={styles.exclamationIcon} name={"info-outline"} size={12} color={"gray"}/>
                     <Text style={[styles.ayahText, styles.ayahPositionText]}>
                       [{ currentAyah.surah } : { currentAyah.ayah }]
@@ -415,7 +437,7 @@ class Main extends React.Component {
                     <Feather name={"refresh-ccw"} size={28} color={"#fff"} />
                   </Button>
                   <Button style={{ marginTop: 25 }} radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleSubmit}>
-                    <Text style={styles.white}>Next</Text>
+                    <Text style={styles.white}>{ I18n.t("submit-button-text") }</Text>
                   </Button>
                 </View>
                 :
@@ -429,14 +451,14 @@ class Main extends React.Component {
                       <View>
                         <TouchableOpacity style={{ padding: 10}} onPress={this.handlePreviousAyah}>
                           <View>
-                            <Text style={styles.navigationButtonText}>Previous</Text>
+                            <Text style={styles.navigationButtonText}>{ I18n.t("previous-ayah") }</Text>
                           </View>
                         </TouchableOpacity>
                       </View>
                       <View>
                         <TouchableOpacity style={{ padding: 10}} onPress={this.handleNextAyah}>
                           <View>
-                            <Text style={styles.navigationButtonText}>Next</Text>
+                            <Text style={[styles.navigationButtonText]}>{ I18n.t("next-ayah") }</Text>
                           </View>
                         </TouchableOpacity>
                       </View>
@@ -444,7 +466,7 @@ class Main extends React.Component {
                     {
                       isRecording && continuous ?
                       <Button radius={23} Width={180} Height={45} color={"#58BCB0"} onPress={this.handleContinuousNext}>
-                        <Text style={styles.white}>Next</Text>
+                        <Text style={styles.white}>{ I18n.t("submit-button-text") }</Text>
                       </Button> : null
                     }
                   </View>
@@ -462,7 +484,7 @@ class Main extends React.Component {
                 onValueChange={this.handleSwitchChange}
                 onTintColor={"#408F84"}
               />
-              <Text style={styles.continuousSwitchText}>continuous recording</Text>
+              <Text style={styles.continuousSwitchText}>{ I18n.t('continuous-mode-note-text') }</Text>
             </View>
           }
         </View>
@@ -481,6 +503,7 @@ export default connect(
     preloadedAyahs: state.preloadedAyahs,
     passedOnBoarding: state.data.passedOnBoarding,
     totalAyahsCount: state.data.totalAyahsCount,
-    continuous: state.data.continuous
+    continuous: state.data.continuous,
+    locale: state.data.locale
   })
 )(Main)

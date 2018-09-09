@@ -4,6 +4,7 @@ import { Font, Asset, AppLoading } from "expo";
 import { Provider } from "react-redux"
 import { AsyncStorage }  from "react-native"
 import fromPairs from "lodash.frompairs"
+import I18n from 'ex-react-native-i18n'
 
 import configStore from "./src/store"
 import { setRecords} from "./src/store/actions/records";
@@ -19,7 +20,8 @@ import {getAyahs} from "./src/store/actions/ayahs";
 import ChangeAyah from "./src/components/ChangeAyah";
 import PickSurah from "./src/components/PickSurah";
 import PickAyah from "./src/components/PickAyah";
-import {getTotalAyahsCount, setContinuous, setpassedOnBoarding} from "./src/store/actions";
+import {getTotalAyahsCount, setContinuous, setLocale, setpassedOnBoarding} from "./src/store/actions";
+import "./src/i18n/index"
 
 const store = configStore()
 
@@ -29,23 +31,33 @@ export default class App extends React.Component {
     await Font.loadAsync({
       'Arial': require('./assets/fonts/arial.ttf'),
       'Proxima-Nova-Alt-Regular': require('./assets/fonts/Proxima-Nova-Alt-Regular.ttf'),
-      'Geeza': require('./assets/fonts/Geeza-Pro.ttf'),
+      'Proxima-Nova-Alt-SemiBold': require('./assets/fonts/Proxima-Nova-Alt-SemiBold.ttf'),
       'Uthmanic': require('./assets/fonts/Uthmanic.otf'),
     });
+    await I18n.initAsync();
     store.dispatch(getDemographicData())
     store.dispatch(getAyahs())
     store.dispatch(getTotalAyahsCount())
     try {
-      const { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous } =
-        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous"]))
+      let { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous, locale } =
+        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous", "locale"]))
       this.setState({ loading: false, passedOnBoardingScreen })
       store.dispatch(setpassedOnBoarding(passedOnBoarding))
       store.dispatch(setContinuous(continuous))
       store.dispatch(setRecords(Number(recordsCount)))
+      store.dispatch(setLocale(locale))
+      store.subscribe(() => {
+        let { locale: newLocale } = store.getState().data
+        if(locale !== newLocale) {
+          locale = newLocale
+          this.forceUpdate()
+        }
+      })
     }
     catch(e) {
       console.log(e.message)
     }
+    Asset.fromModule(require("./assets/imgs/Logo.png")).downloadAsync();
   }
   render() {
     const { loading, passedOnBoardingScreen } = this.state

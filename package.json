@@ -9,6 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "ex-react-native-i18n": "^0.0.4",
     "expo": "^29.0.0",
     "lodash.frompairs": "^4.0.1",
     "react": "16.3.1",

@@ -44,31 +44,25 @@ export const increaseAyahs = () => {
   }
 }
 
-export const setCurrentAyah = () => {
+export const setRandomAyah = () => {
   return async (dispatch, getState) => {
     dispatch({
         type: "RESET_CURRENT_AYAH"
     })
-    const { nextAyah } = getState().preloadedAyahs
-    if(nextAyah.surah) {
-      dispatch({
-        type: "SET_CURRENT_AYAH",
-        currentAyah: nextAyah
+    fetch("https://tarteel.io/get_ayah")
+      .then(res => res.json())
+      .then(json => {
+        dispatch({
+          type: "SET_CURRENT_AYAH",
+          currentAyah: json
+        })
+        dispatch(loadNextAyah(json))
+        dispatch(loadPreviousAyah(json))
+        setLastAyah(json)
       })
-    } else {
-      fetch("https://tarteel.io/get_ayah")
-        .then(res => res.json())
-        .then(json => {
-          dispatch({
-            type: "SET_CURRENT_AYAH",
-            currentAyah: json
-          })
-          setLastAyah(json)
-        })
-        .catch(e => {
-          showError(e.message)
-        })
-    }
+      .catch(e => {
+        showError(e.message)
+      })
   }
 }
 

@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { height, width } = Dimensions.get("window")
 
-export default StyleSheet.create({
+export default props => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -13,13 +13,13 @@ export default StyleSheet.create({
     transform: [ { translateY: 5 } ]
   },
   left: {
-    transform: [ { translateY: 5 } ],
+    transform: [ { translateY: 9 } ],
     display: "flex",
     flexDirection: "row",
   },
   mainScreenCounter: {
     fontSize: 18,
-    color: "rgba(57, 62, 78, 0.76)",
+    color: "#676A75",
     fontWeight: "bold"
   },
   ayahWrapper: {
@@ -27,16 +27,13 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  ayahText: {
-    textAlign: "center",
-    paddingHorizontal: 20,
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-    lineHeight: 30,
-    letterSpacing: 2,
-    color: "#393e4e",
-    fontFamily: "Geeza",
+  imageWrapper: {
+    flex: 1,
+  },
+  ayahImage: {
+    width,
+    height: 250,
+    resizeMode: "contain",
   },
   ayahPositionText: {
     color: "#9fa1a8",
@@ -64,10 +61,9 @@ export default StyleSheet.create({
     top: 10
   },
   recordButtonWrapper: {
-    maxHeight: 350,
+    maxHeight: 135,
     justifyContent: "flex-end",
     alignItems: "center",
-    // backgroundColor: "cyan"
   },
   wrapper: {
     maxHeight: 150,
@@ -83,11 +79,11 @@ export default StyleSheet.create({
     marginBottom: 30,
   },
   navigationButtons: {
-    top: -55,
+    top: -40,
     flexDirection: "row",
     justifyContent: "space-between",
-    width: 225,
-    left: -10
+    width: props.locale === "ar" ? 250 : 225,
+    left: props.locale === "ar" ? -4 : -10,
   },
   navigationButton: {
     bottom: 25,
@@ -100,8 +96,8 @@ export default StyleSheet.create({
   },
   exclamationIcon: {
     position: "absolute",
-    top: 5,
-    right: 5,
+    top: 0,
+    right: 0,
   },
   continuousSwitch: {
     alignItems: "center",
@@ -112,4 +108,31 @@ export default StyleSheet.create({
     fontSize: 13,
     marginTop: 7
   },
+  tooltipContainer: {
+    flex: 1,
+  },
+  arrow: {
+    position: 'absolute',
+    borderColor: 'transparent',
+    borderWidth: 6,
+  },
+  tooltip: {
+    position: 'absolute',
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  bottomBar: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  tooltipButton: {
+    paddingVertical: 10
+  },
+  tooltipButtonText: {
+    color: "#5ec49e"
+  }
 });

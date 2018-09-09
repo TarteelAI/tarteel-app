@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, Image } from "react-native"
 import { Actions } from "react-native-router-flux"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import I18n from "ex-react-native-i18n"
 
 import Button from "../Button"
 import StatusBar from "../StatusBar"
@@ -23,12 +24,12 @@ class ChangeAyah extends React.Component {
             </Button>
           </View>
           <View >
-            <Text style={NavbarStyles.center} >Changing Surah / Ayah</Text>
+            <Text style={NavbarStyles.center} >{ I18n.t("change-ayah-page-title") }</Text>
           </View>
         </Navbar>
         <View style={styles.content}>
           <Text style={styles.text}>
-            You can change Surah or Ayah by clicking on the ayah number under the text.
+            { I18n.t("change-ayah-page-text") }
           </Text>
           <View style={styles.imageWrapper}>
             <Image style={styles.exampleImage} source={require("../../../assets/imgs/change_example.png")} />

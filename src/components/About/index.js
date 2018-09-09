@@ -1,8 +1,9 @@
 import React from "react"
 import { connect }  from "react-redux"
-import { View, Text, Linking, ScrollView, Image } from "react-native"
+import { View, Text, Linking, ScrollView, Image, TouchableWithoutFeedback } from "react-native"
 import { Actions } from "react-native-router-flux"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import I18n from "ex-react-native-i18n"
 
 import Button from "../Button"
 import StatusBar from "../StatusBar"
@@ -14,14 +15,16 @@ import NavbarStyles  from "../Navbar/styles"
 import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError"
 
-import styles from "./styles";
+import stylesFactory from "./styles";
 
 class About extends React.Component {
   handleContactUs = () => {
-    Linking.openURL("mailto:support@tarteel.io")
+    Linking.openURL("mailto:tarteel@abdellatif.io")
   }
+  handleLink = link => Linking.openURL(link)
   render() {
     const { totalAyahsCount } = this.props
+    const styles = stylesFactory(this.props)
     return (
       <View style={styles.container} >
         <StatusBar />
@@ -37,22 +40,75 @@ class About extends React.Component {
             <Image  source={require("../../../assets/imgs/Logo.png")} />
           </View>
           <View style={styles.title}>
-            <Text style={styles.ayahsCount}>{ numberWithCommas(totalAyahsCount) }</Text>
-            <Text style={styles.titleText}>Ayas recorded</Text>
+            <Text style={styles.ayahsCount}>{ numberWithCommas(totalAyahsCount - 1000) }</Text>
+            <Text style={styles.titleText}>{ I18n.t("about-page-recited-ayahs-text") }</Text>
           </View>
-          <Text style={styles.text}>
-            The Tarteel 10,000 Project aims is to build a dataset of how different people -- women and men of different ethnicities and ages -- recite the Quran.
-          </Text>
-          <Text style={styles.text}>
-            This data (of 10,000 annotated verses) will be used build machine learning models to convert recitation2text. This model will be released to developers who want use it to build cool and useful apps (for example hifz correction) for the community.
-          </Text>
-          <Text style={styles.text}>
-            What I’d like to hear from you in particular is 1) any bugs that you find while using Tarteel 2) any suggestions you have for features we can include to incentivize more people to use the system and upload their recitations.
-          </Text>
+          <View style={styles.textContainer}>
+            <Text style={styles.aboutTitle}>{ I18n.t("about-page-first-paragraph-title") }</Text>
+            <Text style={styles.text}>
+              { I18n.t("about-page-first-paragraph-text") }
+            </Text>
+            <Text style={styles.aboutTitle}>{ I18n.t("about-page-second-paragraph-title") }</Text>
+            <Text style={styles.text}>
+              { I18n.t("about-page-second-paragraph-text-1") }
+            </Text>
+            <Text style={styles.text}>
+              { I18n.t("about-page-second-paragraph-text-2") }
+            </Text>
+            <View style={styles.list}>
+              <Text style={styles.listItem}>
+                • { I18n.t("fields-of-use-first-item") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("fields-of-use-second-item") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("fields-of-use-third-item") }
+              </Text>
+            </View>
+            <Text style={styles.aboutTitle}>{ I18n.t("about-page-third-paragraph-title") }</Text>
+            <Text style={styles.text}>
+              { I18n.t("about-page-third-paragraph-text") }
+            </Text>
+            <View style={styles.list}>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-1") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-2") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-3") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-4") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-5") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-6") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-7") }
+              </Text>
+              <Text style={styles.listItem}>
+                • { I18n.t("contributor-8") }
+              </Text>
+            </View>
+            <Text style={styles.aboutTitle}>{ I18n.t("about-page-fourth-paragraph-title") }</Text>
+            <Text style={styles.text}>
+              { I18n.t("about-page-fourth-paragraph-text") }
+              <TouchableWithoutFeedback onPress={()=> this.handleLink("https://github.com/abidlabs/tarteel.io") }
+                                        style={styles.link}>
+                <Text style={styles.linkText}>https://github.com/abidlabs/tarteel.io.</Text>
+              </TouchableWithoutFeedback>
+            </Text>
+          </View>
           <View style={styles.bottomButtons}>
             <Button radius={23} Width={150} Height={45} color={"#58BCB0"} onPress={this.handleContactUs}>
               <Text style={styles.white}>
-                Contact Us
+                { I18n.t("contact-us-button-text") }
               </Text>
             </Button>
           </View>
@@ -65,6 +121,7 @@ class About extends React.Component {
 export default connect(
   state => ({
     ayahsCount: state.ayahs.count,
-    totalAyahsCount: state.data.totalAyahsCount
+    totalAyahsCount: state.data.totalAyahsCount,
+    locale: state.data.locale
   })
 )(About)

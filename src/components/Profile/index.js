@@ -3,13 +3,14 @@ import { View, Text, FlatList, TouchableWithoutFeedback, Linking, Share, Alert }
 import { connect } from "react-redux"
 import { Actions } from "react-native-router-flux"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import I18n from "ex-react-native-i18n"
 
 import Navbar from "../Navbar";
 import Button from  "../Button"
 import StatusBar from  "../StatusBar"
 import Snackbar from '../SnackBar'
 
-import { restoreRecords } from "../../store/actions/index"
+import {restoreRecords, setLocale} from "../../store/actions/index"
 import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError";
 import AnimatedCircularProgress  from '../../utils/AnimatedCircularProgress'
@@ -22,42 +23,42 @@ class Profile extends React.Component {
     fill: 100,
     linksList: [
       {
-        text: "Change Surah / Ayah",
-        key: 1,
+        text: I18n.t("change-ayah-page-title"),
+        key: 0,
         onClick: () => Actions.change()
       },
       {
-        text: "Demographic data",
+        text: I18n.t("demographic-info-link-text"),
         key: 1,
         onClick: () => Actions.demographicForm()
       },
       {
-        text: "Share Tarteel",
+        text: I18n.t("share-tarteel-link-text"),
         key: 2,
         onClick: () => {
           Share.share({
             url: 'http://tarteel.app.link/3NMFNtbiBP',
-            title: 'Share Tarteel',
+            title: I18n.t("share-tarteel-post-title"),
           }).then(() => {
 
           }).catch(e => showError(e.message))
         }
       },
       {
-        text: "Privacy policy",
+        text: I18n.t("privacy-policy-link-text"),
         key: 3,
         onClick: () => Linking.openURL("https://tarteel.io/privacy")
       },
       {
-        text: "Reset records",
+        text: I18n.t("reset-records-link-text"),
         key: 4,
         onClick: () => {
           Alert.alert(
-            'Are you sure ?',
-            'This is going to remove all your recordings history',
+            I18n.t("restore-records-alert-title"),
+            I18n.t("restore-records-alert-text"),
             [
-              {text: 'Cancel', style: 'cancel'},
-              {text: 'Restore', onPress: this.handleRestore },
+              {text: I18n.t("restore-record-alert-cancel"), style: 'cancel'},
+              {text: I18n.t("restore-record-alert-confirm"), onPress: this.handleRestore },
             ],
             { cancelable: true }
           )
@@ -65,11 +66,33 @@ class Profile extends React.Component {
         }
       },
       {
-        text: "Contact us",
+        text: I18n.t("change-language-link-text"),
         key: 5,
-        onClick: () => Linking.openURL("mailto:support@tarteel.io")
+        onClick: () => {
+          Alert.alert(
+            I18n.t("change-language-link-text"),
+            "",
+            [
+              {text: "English", onPress: () => this.handleChangeLanguage("en")},
+              {text: "العربيه", onPress: () => this.handleChangeLanguage("ar") },
+            ],
+            { cancelable: true }
+          )
+
+        }
+      },
+      {
+        text: I18n.t("contact-us-button-text"),
+        key: 6,
+        onClick: () => Linking.openURL("mailto:tarteel@abdellatif.io")
       },
     ]
+  }
+  handleChangeLanguage = (locale) => {
+    I18n.locale = (locale) ? locale.replace(/_/, '-') : '';
+    this.forceUpdate(() => {
+      this.props.dispatch(setLocale(locale))
+    })
   }
   handleRestore = () => {
     this.props.dispatch(restoreRecords())
@@ -77,6 +100,7 @@ class Profile extends React.Component {
   render() {
     const { linksList } = this.state
     const { ayahsCount } = this.props
+    const currentTarget = ayahsCount > 100 ? 1000 : ayahsCount > 1000 ? 10000 : 100
     return (
       <View style={styles.container}>
         <StatusBar />
@@ -89,8 +113,8 @@ class Profile extends React.Component {
             </Button>
           </View>
           <View >
-            <Text style={[NavbarStyles.center, styles.primaryColor]}>
-              Profile
+            <Text style={[NavbarStyles.center, styles.title]}>
+              { I18n.t("profile-page-title") }
             </Text>
           </View>
         </Navbar>
@@ -99,7 +123,7 @@ class Profile extends React.Component {
             <AnimatedCircularProgress
               size={120}
               width={3}
-              fill={75}
+              fill={ayahsCount/currentTarget*100}
               rotation={360}
               duration={1000}
               tintColor="#5ec49e"
@@ -108,11 +132,14 @@ class Profile extends React.Component {
               {
                 (fill) => (
                   <View>
+                    <Text style={styles.progressText} >
+                      { I18n.t("progressbar-ayahs") }
+                    </Text>
                     <Text style={styles.ayahsCount}>
                       { String(numberWithCommas((ayahsCount))) }
                     </Text>
-                    <Text style={styles.progressText} >
-                      Ayah recited
+                    <Text style={styles.progressNote} >
+                      { `/${currentTarget}` }
                     </Text>
                   </View>
                 )
@@ -136,7 +163,7 @@ const ListItem = ({ item }) => {
     <View style={styles.listItem}>
       <TouchableWithoutFeedback onPress={item.onClick} >
         <View>
-          <Text style={styles.primaryColor}>
+          <Text style={styles.listItemText}>
             { item.text }
           </Text>
         </View>

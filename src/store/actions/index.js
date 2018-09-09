@@ -3,8 +3,10 @@ import { setDemographicData } from "./demographicData"
 import {setPassedOnBoardingScreen, setLastAyah} from "../../utils/index"
 import { Actions } from "react-native-router-flux"
 import showError from "../../utils/showError"
-import {setAyahs} from "./ayahs";
+import {setAyahs, setRandomAyah} from "./ayahs";
 import {AsyncStorage} from "react-native";
+import I18n from "ex-react-native-i18n";
+import App from "../../../App"
 
 export const restoreRecords = () => {
   return (dispatch, getState) => {
@@ -14,6 +16,7 @@ export const restoreRecords = () => {
       dispatch(setDemographicData({}))
       setPassedOnBoardingScreen("")
       dispatch(setpassedOnBoarding(""))
+      dispatch(setContinuous(""))
       setLastAyah({})
       Actions.onBoarding()
     }
@@ -65,6 +68,21 @@ export const setContinuous = val => {
        type: "SET_CONTINUOUS",
        val: Boolean(val)
      })
+   } catch (e) {
+     showError(e.message);
+   }
+ }
+}
+
+export const setLocale = locale => {
+ return (dispatch, getState) => {
+   try {
+     AsyncStorage.setItem("locale", locale)
+     dispatch({
+       type: "SET_LOCALE",
+       locale
+     })
+     I18n.locale = (locale) ? locale.replace(/_/, '-') : '';
    } catch (e) {
      showError(e.message);
    }
