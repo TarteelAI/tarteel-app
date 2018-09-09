@@ -49,7 +49,7 @@ export const setRandomAyah = () => {
     dispatch({
         type: "RESET_CURRENT_AYAH"
     })
-    fetch("https://tarteel.io/get_ayah")
+    fetch("https://www.tarteel.io/get_ayah")
       .then(res => res.json())
       .then(json => {
         dispatch({
@@ -71,7 +71,7 @@ export const setSpecificAyah = (surah, ayah) => {
     dispatch({
       type: "RESET_CURRENT_AYAH"
     })
-    fetch("https://tarteel.io/get_ayah/", {
+    fetch("https://www.tarteel.io/get_ayah/", {
       method: "POST",
       body: JSON.stringify({surah, ayah}),
       headers: {

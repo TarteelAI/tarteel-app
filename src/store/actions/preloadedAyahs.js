@@ -32,7 +32,7 @@ export const loadPreviousAyah = () => {
     fetchData(body)
       .then(json => {
         dispatch(setPreviousAyah(json))
-        Image.prefetch("https://tarteel.io" + json.image_url)
+        Image.prefetch("https://www.tarteel.io" + json.image_url)
       })
       .catch(e => {
         console.log(e.message)
@@ -70,7 +70,7 @@ export const loadNextAyah = () => {
     fetchData(body)
       .then(json => {
         dispatch(setNextAyah(json))
-        Image.prefetch("https://tarteel.io" + json.image_url)
+        Image.prefetch("https://www.tarteel.io" + json.image_url)
       })
       .catch(e => {
         console.log(e.message)
@@ -81,7 +81,7 @@ export const loadNextAyah = () => {
 
 const fetchData = (body) => {
   console.log(body)
-  return fetch("https://tarteel.io/get_ayah/", {
+  return fetch("https://www.tarteel.io/get_ayah/", {
     method: "POST",
     body: JSON.stringify(body),
     headers: {

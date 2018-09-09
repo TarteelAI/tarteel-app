@@ -28,7 +28,7 @@ export const restoreRecords = () => {
 
 export const getTotalAyahsCount = () => {
   return (dispatch, getState) => {
-    fetch("https://tarteel.io/get_total_count/")
+    fetch("https://www.tarteel.io/get_total_count/")
       .then(res => res.json())
       .then(json => {
         dispatch({

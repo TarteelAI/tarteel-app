@@ -154,6 +154,7 @@ class Main extends React.Component {
       if(!this.props.specific) {
         if(lastAyah && lastAyah.surah) {
           this.props.dispatch(setStaticAyah(lastAyah))
+          Image.prefetch("https://www.tarteel.io" + lastAyah.image_url)
           this.props.dispatch(loadNextAyah())
           this.props.dispatch(loadPreviousAyah())
         }
@@ -180,7 +181,7 @@ class Main extends React.Component {
     const { surah, ayah, hash, session_id } = currentAyah
     const recitation_mode = continuous ? "continuous" : "discrete"
     console.log("Uploading " + uri);
-    let apiUrl = 'https://tarteel.io/api/recordings/';
+    let apiUrl = 'https://www.tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
@@ -217,7 +218,7 @@ class Main extends React.Component {
   }
   handleImageSize = (uri) => {
     const { currentAyah } = this.props
-    Image.getSize("https://tarteel.io" + uri, (width, height) => {
+    Image.getSize("https://www.tarteel.io" + uri, (width, height) => {
       this.setState({
         currentImage: {
           height,
@@ -414,7 +415,7 @@ class Main extends React.Component {
           <View style={styles.ayahWrapper}>
             {
               !currentAyah.line ? <Loader /> :
-                <Image source={{uri: "https://tarteel.io" + currentAyah.image_url}}
+                <Image source={{uri: "https://www.tarteel.io" + currentAyah.image_url}}
                        style={[styles.ayahImage, currentImage.height > 300 ? {resizeMode: "stretch"} : {height: currentImage.height}]} />
             }
             {

@@ -47,7 +47,7 @@ class Profile extends React.Component {
       {
         text: I18n.t("privacy-policy-link-text"),
         key: 3,
-        onClick: () => Linking.openURL("https://tarteel.io/privacy")
+        onClick: () => Linking.openURL("https://www.tarteel.io/privacy")
       },
       {
         text: I18n.t("reset-records-link-text"),

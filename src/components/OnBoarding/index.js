@@ -56,7 +56,7 @@ class OnBoarding extends React.Component {
     }
   }
   handleLink = () => {
-    Linking.openURL("https://tarteel.io/privacy")
+    Linking.openURL("https://www.tarteel.io/privacy")
   }
   render() {
     const { stage, scrollEnabled } = this.state
