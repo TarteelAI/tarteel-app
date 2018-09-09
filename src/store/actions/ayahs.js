@@ -52,10 +52,7 @@ export const setRandomAyah = () => {
     fetch("https://www.tarteel.io/get_ayah")
       .then(res => res.json())
       .then(json => {
-        dispatch({
-          type: "SET_CURRENT_AYAH",
-          currentAyah: json
-        })
+        dispatch(setStaticAyah(json))
         dispatch(loadNextAyah(json))
         dispatch(loadPreviousAyah(json))
         setLastAyah(json)
@@ -80,10 +77,7 @@ export const setSpecificAyah = (surah, ayah) => {
     })
       .then(res => res.json())
       .then(json => {
-        dispatch({
-          type: "SET_CURRENT_AYAH",
-          currentAyah: json
-        })
+        dispatch(setStaticAyah(json))
         dispatch(loadNextAyah())
         dispatch(loadPreviousAyah())
         setLastAyah(json)

@@ -151,16 +151,18 @@ class Main extends React.Component {
     try {
       const lastAyah = JSON.parse(await AsyncStorage.getItem("lastAyah"))
       // If it's specific the specific function sets the ayah
-      if(!this.props.specific) {
-        if(lastAyah && lastAyah.surah) {
-          this.props.dispatch(setStaticAyah(lastAyah))
-          Image.prefetch("https://www.tarteel.io" + lastAyah.image_url)
-          this.props.dispatch(loadNextAyah())
-          this.props.dispatch(loadPreviousAyah())
+      if(!this.props.currentAyah.surah) {
+        if(!this.props.specific) {
+          if(lastAyah && lastAyah.surah) {
+            this.props.dispatch(setStaticAyah(lastAyah))
+            this.props.dispatch(loadNextAyah())
+            this.props.dispatch(loadPreviousAyah())
+          }
+          else
+            this.fetchRandomAyah()
         }
-        else
-          this.fetchRandomAyah()
       }
+      this.handleImageSize(this.props.currentAyah.image_url)
     }catch (e) {
       showError(e.message)
     }
@@ -217,7 +219,6 @@ class Main extends React.Component {
     })
   }
   handleImageSize = (uri) => {
-    const { currentAyah } = this.props
     Image.getSize("https://www.tarteel.io" + uri, (width, height) => {
       this.setState({
         currentImage: {
