@@ -77,7 +77,7 @@ export const setContinuous = val => {
 export const setLocale = locale => {
  return (dispatch, getState) => {
    try {
-     AsyncStorage.setItem("locale", locale)
+     AsyncStorage.setItem("locale", String(locale))
      dispatch({
        type: "SET_LOCALE",
        locale

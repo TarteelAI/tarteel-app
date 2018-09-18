@@ -23,17 +23,21 @@ export default props => StyleSheet.create({
     fontWeight: "bold"
   },
   ayahWrapper: {
-    flex: 2,
+    flex: 3,
     justifyContent: "center",
     alignItems: "center",
   },
-  imageWrapper: {
-    flex: 1,
-  },
-  ayahImage: {
-    width,
-    height: 250,
-    resizeMode: "contain",
+  ayahText: {
+    textAlign: "center",
+    paddingHorizontal: 20,
+    fontSize: 16,
+    minHeight: 100,
+    fontWeight: "bold",
+    marginBottom: 15,
+    lineHeight: 30,
+    letterSpacing: 2,
+    color: "#393e4e",
+    fontFamily: "Uthmanic",
   },
   ayahPositionText: {
     color: "#9fa1a8",
