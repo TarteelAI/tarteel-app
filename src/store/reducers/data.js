@@ -1,7 +1,8 @@
 const initState = {
   totalAyahsCount: 0,
   passedOnBoarding: "",
-  continuous: ""
+  continuous: "",
+  notifications: "week"
 }
 
 export default (state = initState, action) => {
@@ -30,6 +31,11 @@ export default (state = initState, action) => {
       return({
         ...state,
         locale: action.locale
+      })
+    case "SET_NOTIFICATION_ITERATION":
+      return({
+        ...state,
+        notifications: action.value
       })
     default:
       return state

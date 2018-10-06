@@ -7,6 +7,7 @@ import {setAyahs, setRandomAyah} from "./ayahs";
 import {AsyncStorage} from "react-native";
 import I18n from "ex-react-native-i18n";
 import App from "../../../App"
+import {bindNotifications} from "../../utils/notification";
 
 export const restoreRecords = () => {
   return (dispatch, getState) => {
@@ -77,7 +78,7 @@ export const setContinuous = val => {
 export const setLocale = locale => {
  return (dispatch, getState) => {
    try {
-     AsyncStorage.setItem("locale", locale)
+     if (locale) AsyncStorage.setItem("locale", locale)
      dispatch({
        type: "SET_LOCALE",
        locale
@@ -87,4 +88,21 @@ export const setLocale = locale => {
      showError(e.message);
    }
  }
+}
+
+export const setNotificationIteration = value => {
+  return (dispatch, getState) => {
+    try {
+      if (value) {
+        AsyncStorage.setItem("notifications", value),
+        dispatch({
+          type: "SET_NOTIFICATION_ITERATION",
+          value
+        })
+        bindNotifications(value)
+      }
+    } catch (e) {
+      showError(e.message);
+    }
+  }
 }

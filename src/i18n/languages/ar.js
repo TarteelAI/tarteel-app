@@ -43,6 +43,7 @@ export const ar = {
   "privacy-policy-link-text": "سياسة الخصوصية",
   "reset-records-link-text": "إستعادة التسجيلات",
   "change-language-link-text": "تغيير اللغه",
+  "notifications-link-text": "الإشعارات",
   "about-link-text": "عن ترتيل",
   "demographic-info-link-text": "بياناتك",
   "mobile-app-link-text": "تطبيق الهاتف",

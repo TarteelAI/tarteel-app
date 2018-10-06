@@ -1,6 +1,7 @@
-import { StyleSheet, Dimensions } from "react-native"
+import { StyleSheet, Dimensions, Platform } from "react-native"
 
 const { height, width } = Dimensions.get("window")
+const os = Platform.OS;
 
 export default StyleSheet.create({
   container: {
@@ -8,7 +9,6 @@ export default StyleSheet.create({
     backgroundColor: "#fff",
   },
   content: {
-    flex: 1,
     paddingHorizontal: width * 0.05
   },
   title: {
@@ -20,17 +20,17 @@ export default StyleSheet.create({
   list: {
     borderTopWidth: 1,
     borderColor: "#ebebeb",
-    marginTop: height * 0.05,
+    marginVertical: height * 0.10,
   },
   listItem: {
-    paddingVertical: 10,
+    paddingVertical:  os === "ios" ? (height * 0.020) : (height * 0.025) ,
     borderBottomWidth: 1,
     borderBottomColor: "#ebebeb",
   },
   listItemText: {
     color: "#485364",
     fontFamily: "Proxima-Nova-Alt-Regular",
-    fontSize: height * 0.025,
+    fontSize: os === "ios" ? (height * 0.025) : (height * 0.030),
     fontWeight: '400',
     lineHeight: 25
   },

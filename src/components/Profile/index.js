@@ -1,16 +1,17 @@
 import React from "react"
-import { View, Text, FlatList, TouchableWithoutFeedback, Linking, Share, Alert } from "react-native"
+import { View, Text, FlatList, TouchableWithoutFeedback, ScrollView, Linking, Share, Alert } from "react-native"
 import { connect } from "react-redux"
 import { Actions } from "react-native-router-flux"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, Feather, FontAwesome } from "@expo/vector-icons"
 import I18n from "ex-react-native-i18n"
+import { ActionSheet, ActionSheetItem } from 'react-native-action-sheet-component';
 
 import Navbar from "../Navbar";
 import Button from  "../Button"
 import StatusBar from  "../StatusBar"
 import Snackbar from '../SnackBar'
 
-import {restoreRecords, setLocale} from "../../store/actions/index"
+import {restoreRecords, setLocale, setNotificationIteration} from "../../store/actions/index"
 import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError";
 import AnimatedCircularProgress  from '../../utils/AnimatedCircularProgress'
@@ -19,8 +20,10 @@ import styles from "./styles"
 import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
+  actionSheet;
   state = {
     fill: 100,
+    defaultSelectedValues: [this.props.notifications],
     linksList: [
       {
         text: I18n.t("change-ayah-page-title"),
@@ -82,8 +85,17 @@ class Profile extends React.Component {
         }
       },
       {
-        text: I18n.t("contact-us-button-text"),
+        text: I18n.t("notifications-link-text"),
         key: 6,
+        onClick: () => {
+          this.actionSheet.show(() => {
+            console.log('callback - show');
+          })
+        }
+      },
+      {
+        text: I18n.t("contact-us-button-text"),
+        key: 7,
         onClick: () => Linking.openURL("mailto:tarteel@abdellatif.io")
       },
     ]
@@ -97,10 +109,14 @@ class Profile extends React.Component {
   handleRestore = () => {
     this.props.dispatch(restoreRecords())
   }
+  handleNotificationChange = (value, index, selectedData) => {
+    this.props.dispatch(setNotificationIteration(value))
+  }
   render() {
-    const { linksList } = this.state
-    const { ayahsCount } = this.props
-    const currentTarget = ayahsCount > 100 ? 1000 : ayahsCount > 1000 ? 10000 : 100
+    const { linksList } = this.state;
+    const { ayahsCount } = this.props;
+    const currentTarget = ayahsCount > 100 ? 1000 : ayahsCount > 1000 ? 10000 : 100;
+    const checkedIcon =  <Feather name={"check"} size={32} color={"#5ec49e"}/>;
     return (
       <View style={styles.container}>
         <StatusBar />
@@ -118,8 +134,8 @@ class Profile extends React.Component {
             </Text>
           </View>
         </Navbar>
-        <View style={styles.content}>
-          <View style={styles.progressContainer}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.progressContainer} >
             <AnimatedCircularProgress
               size={120}
               width={3}
@@ -152,7 +168,42 @@ class Profile extends React.Component {
               renderItem={({item}) => <ListItem item={item} /> }
             />
           </View>
-        </View>
+        </ScrollView>
+        <ActionSheet
+            ref={(actionSheet) => { this.actionSheet = actionSheet; }}
+            position="bottom"
+            onChange={this.handleNotificationChange}
+            defaultValue={this.state.defaultSelectedValues}
+            multiple={false}
+        >
+          <ActionSheetItem
+              text=" Daily"
+              value="day"
+              selectedIcon={checkedIcon}
+              icon={
+                <Feather name="clock" color="gray"  size={25} />
+              }
+              onPress={this.onItemPress}
+          />
+          <ActionSheetItem
+              text=" Weekly"
+              value="week"
+              selectedIcon={checkedIcon}
+              icon={
+                <FontAwesome name="calendar" color="gray" size={25} />
+              }
+              onPress={this.onItemPress}
+          />
+          <ActionSheetItem
+              text=" OFF"
+              value="off"
+              selectedIcon={checkedIcon}
+              icon={
+                <Feather name="bell-off" color="gray" size={25} />
+              }
+              onPress={this.onItemPress}
+          />
+        </ActionSheet>
       </View>
     )
   }
@@ -177,6 +228,7 @@ export default connect(
   state => ({
     ayahsCount: state.ayahs.count,
     demographicData: state.demographicData,
-    passedOnBoarding: state.data.passedOnBoarding
+    passedOnBoarding: state.data.passedOnBoarding,
+    notifications: state.data.notifications
   })
 )(Profile)

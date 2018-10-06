@@ -14,6 +14,7 @@
     "lodash.frompairs": "^4.0.1",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-29.0.0.tar.gz",
+    "react-native-action-sheet-component": "^0.0.36",
     "react-native-country-picker-modal": "^0.6.2",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-material-ripple": "^0.8.0",
