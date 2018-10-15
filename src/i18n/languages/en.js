@@ -46,6 +46,7 @@ export const en = {
   "privacy-policy-link-text": "Privacy policy",
   "reset-records-link-text": "Reset records",
   "change-language-link-text": "Change Language",
+  "notifications-link-text": "Notifications",
   "about-link-text": "About",
   "demographic-info-link-text": "Demographic Data",
   "mobile-app-link-text": "Mobile App",
