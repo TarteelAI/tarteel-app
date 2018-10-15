@@ -57,15 +57,18 @@ export default class App extends React.Component {
       store.dispatch(setNotificationIteration(notifications))
       store.subscribe(() => {
         let { locale: newLocale } = store.getState().data
-        if(locale !== newLocale) {
-          locale = newLocale
-          this.forceUpdate()
+        if(locale) {
+          if(locale !== newLocale) {
+            locale = newLocale
+            this.forceUpdate()
+          }
         }
       })
     }
     catch(e) {
       console.log(e.message)
     }
+    // Preloading the Image in about page
     Asset.fromModule(require("./assets/imgs/Logo.png")).downloadAsync();
   }
   render() {

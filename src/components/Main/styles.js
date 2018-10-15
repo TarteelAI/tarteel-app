@@ -1,6 +1,8 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 const { height, width } = Dimensions.get("window")
+
+const os = Platform.OS;
 
 export default props => StyleSheet.create({
   container: {
@@ -23,17 +25,20 @@ export default props => StyleSheet.create({
     fontWeight: "bold"
   },
   ayahWrapper: {
-    flex: 2,
+    flex: 3,
     justifyContent: "center",
     alignItems: "center",
   },
-  imageWrapper: {
-    flex: 1,
-  },
-  ayahImage: {
-    width,
-    height: 250,
-    resizeMode: "contain",
+  ayahText: {
+    textAlign: "center",
+    paddingHorizontal: 20,
+    fontSize: os === "android" ? 16 : 18,
+    minHeight: 100,
+    fontWeight: "bold",
+    marginBottom: 15,
+    lineHeight: 30,
+    color: "#393e4e",
+    fontFamily: "Uthmanic",
   },
   ayahPositionText: {
     color: "#9fa1a8",
