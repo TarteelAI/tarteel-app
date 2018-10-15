@@ -79,6 +79,9 @@ export const ar = {
   "restore-records-alert-text": "سوف تقوم بمسح كل سجل تسجيلاتك",
   "restore-record-alert-cancel": "تراجع",
   "restore-record-alert-confirm": "تأكيد",
+  "notifications-daily-option": "يومياً",
+  "notifications-weekly-option": "أسبوعياً",
+  "notifications-off-option": "إغلاقً",
   "share-tarteel-post-title": "ساعد في تحدي ترتيل 10,000",
 
 

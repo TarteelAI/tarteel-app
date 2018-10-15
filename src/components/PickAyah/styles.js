@@ -4,10 +4,12 @@ const { height, width } = Dimensions.get("window")
 
 export default StyleSheet.create({
   container: {
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    flex: 1,
   },
   content: {
-    paddingVertical: 15
+    paddingVertical: 15,
+    flex: 1,
   },
   searchBar :{
     marginBottom: 15,
@@ -23,7 +25,8 @@ export default StyleSheet.create({
   },
   listWrapper: {
     backgroundColor: "transparent",
-    height: height * 0.75,
+    flexGrow: 1,
+    marginBottom: 50,
   },
   listItem: {
     borderColor: "lightgray",

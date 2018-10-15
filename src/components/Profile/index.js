@@ -16,7 +16,7 @@ import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError";
 import AnimatedCircularProgress  from '../../utils/AnimatedCircularProgress'
 
-import styles from "./styles"
+import stylesFactory from "./styles"
 import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
@@ -115,8 +115,22 @@ class Profile extends React.Component {
   render() {
     const { linksList } = this.state;
     const { ayahsCount } = this.props;
+    const styles = stylesFactory({...this.props, locale: I18n.locale})
     const currentTarget = ayahsCount > 100 ? 1000 : ayahsCount > 1000 ? 10000 : 100;
     const checkedIcon =  <Feather name={"check"} size={32} color={"#5ec49e"}/>;
+    const ListItem = ({ item }) => {
+      return (
+          <View style={styles.listItem}>
+            <TouchableWithoutFeedback onPress={item.onClick} >
+              <View>
+                <Text style={styles.listItemText}>
+                  { item.text }
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <StatusBar />
@@ -177,29 +191,32 @@ class Profile extends React.Component {
             multiple={false}
         >
           <ActionSheetItem
-              text=" Daily"
+              text={` ${ I18n.t("notifications-daily-option") }`}
               value="day"
               selectedIcon={checkedIcon}
+              style={styles.actionSheetItem}
               icon={
-                <Feather name="clock" color="gray"  size={25} />
+                I18n.locale !== "ar" && <Feather name="clock" color="gray" size={25} />
               }
               onPress={this.onItemPress}
           />
           <ActionSheetItem
-              text=" Weekly"
+              text={` ${ I18n.t("notifications-weekly-option") }`}
               value="week"
               selectedIcon={checkedIcon}
+              style={styles.actionSheetItem}
               icon={
-                <FontAwesome name="calendar" color="gray" size={25} />
+                I18n.locale !== "ar" && <FontAwesome name="calendar" color="gray" size={25} />
               }
               onPress={this.onItemPress}
           />
           <ActionSheetItem
-              text=" OFF"
+              text={` ${ I18n.t("notifications-off-option") }`}
               value="off"
               selectedIcon={checkedIcon}
+              style={styles.actionSheetItem}
               icon={
-                <Feather name="bell-off" color="gray" size={25} />
+                I18n.locale !== "ar" && <Feather name="bell-off" color="gray" size={25} />
               }
               onPress={this.onItemPress}
           />

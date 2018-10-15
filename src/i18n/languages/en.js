@@ -82,6 +82,9 @@ export const en = {
   "restore-records-alert-text": "This is going to remove all your recordings history",
   "restore-record-alert-cancel": "Cancel",
   "restore-record-alert-confirm": "Restore",
+  "notifications-daily-option": "Daily",
+  "notifications-weekly-option": "Weekly",
+  "notifications-off-option": "OFF",
   "share-tarteel-post-title": "Help in Tarteel 10,000 challenge",
 
 

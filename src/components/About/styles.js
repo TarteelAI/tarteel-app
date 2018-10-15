@@ -65,6 +65,7 @@ export default (props) => StyleSheet.create({
     color: "#7a7e7b",
     paddingHorizontal: 20,
     fontFamily: "Proxima-Nova-Alt-SemiBold",
+    writingDirection: props.locale === "ar" ? 'rtl' : 'ltr'
   },
   white: {
     color: "#fff"

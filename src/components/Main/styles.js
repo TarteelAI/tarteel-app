@@ -32,7 +32,7 @@ export default props => StyleSheet.create({
   ayahText: {
     textAlign: "center",
     paddingHorizontal: 20,
-    fontSize: os === "android" ? 16 : 18,
+    fontSize: width * 0.050,
     minHeight: 100,
     fontWeight: "bold",
     marginBottom: 15,
