@@ -20,7 +20,14 @@ import {getAyahs} from "./src/store/actions/ayahs";
 import ChangeAyah from "./src/components/ChangeAyah";
 import PickSurah from "./src/components/PickSurah";
 import PickAyah from "./src/components/PickAyah";
-import {getTotalAyahsCount, setContinuous, setLocale, setpassedOnBoarding} from "./src/store/actions";
+import {
+  getTotalAyahsCount,
+  setContinuous,
+  setLocale,
+  setNotificationIteration,
+  setpassedOnBoarding
+} from "./src/store/actions";
+import {bindNotifications} from "./src/utils/notification";
 import "./src/i18n/index"
 
 const store = configStore()
@@ -35,17 +42,19 @@ export default class App extends React.Component {
       'Uthmanic': require('./assets/fonts/Uthmanic.otf'),
     });
     await I18n.initAsync();
+    bindNotifications();
     store.dispatch(getDemographicData())
     store.dispatch(getAyahs())
     store.dispatch(getTotalAyahsCount())
     try {
-      let { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous, locale } =
-        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous", "locale"]))
+      let { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous, locale, notifications } =
+        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous", "locale", "notifications"]))
       this.setState({ loading: false, passedOnBoardingScreen })
       store.dispatch(setpassedOnBoarding(passedOnBoarding))
       store.dispatch(setContinuous(continuous))
       store.dispatch(setRecords(Number(recordsCount)))
       store.dispatch(setLocale(locale))
+      store.dispatch(setNotificationIteration(notifications))
       store.subscribe(() => {
         let { locale: newLocale } = store.getState().data
         if(locale !== newLocale) {
