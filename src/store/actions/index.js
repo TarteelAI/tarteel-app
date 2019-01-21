@@ -106,3 +106,19 @@ export const setNotificationIteration = value => {
     }
   }
 }
+
+export const setFontSize = value => {
+  return (dispatch, getState) => {
+    try {
+      if (value) {
+        AsyncStorage.setItem("fontSize", value),
+          dispatch({
+            type: "SET_FONT_SIZE",
+            value
+          })
+      }
+    } catch (e) {
+      showError(e.message);
+    }
+  }
+}

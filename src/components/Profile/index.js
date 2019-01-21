@@ -11,7 +11,7 @@ import Button from  "../Button"
 import StatusBar from  "../StatusBar"
 import Snackbar from '../SnackBar'
 
-import {restoreRecords, setLocale, setNotificationIteration} from "../../store/actions/index"
+import {restoreRecords, setLocale, setFontSize, setNotificationIteration} from "../../store/actions/index"
 import { numberWithCommas } from "../../utils"
 import showError from "../../utils/showError";
 import AnimatedCircularProgress  from '../../utils/AnimatedCircularProgress'
@@ -21,23 +21,35 @@ import NavbarStyles from "../Navbar/styles"
 
 class Profile extends React.Component {
   actionSheet;
+  fontActionSheet;
+
   state = {
     fill: 100,
     defaultSelectedValues: [this.props.notifications],
+    selectedFontSize: [this.props.fontSize],
     linksList: [
       {
         text: I18n.t("change-ayah-page-title"),
-        key: 0,
         onClick: () => Actions.change()
       },
       {
         text: I18n.t("demographic-info-link-text"),
-        key: 1,
         onClick: () => Actions.demographicForm()
       },
       {
+        text: I18n.t("font-size-link-text"),
+        new: true,
+        onClick: () => {
+          this.fontActionSheet.show()
+        }
+      },
+      {
+        text: I18n.t("evaluate-ayahs-link-text"),
+        new: true,
+        onClick: () => Linking.openURL("https://www.tarteel.io/evaluation/evaluator")
+      },
+      {
         text: I18n.t("share-tarteel-link-text"),
-        key: 2,
         onClick: () => {
           Share.share({
             url: 'http://tarteel.app.link/3NMFNtbiBP',
@@ -49,12 +61,10 @@ class Profile extends React.Component {
       },
       {
         text: I18n.t("privacy-policy-link-text"),
-        key: 3,
         onClick: () => Linking.openURL("https://www.tarteel.io/privacy")
       },
       {
         text: I18n.t("reset-records-link-text"),
-        key: 4,
         onClick: () => {
           Alert.alert(
             I18n.t("restore-records-alert-title"),
@@ -70,7 +80,6 @@ class Profile extends React.Component {
       },
       {
         text: I18n.t("change-language-link-text"),
-        key: 5,
         onClick: () => {
           Alert.alert(
             I18n.t("change-language-link-text"),
@@ -86,7 +95,6 @@ class Profile extends React.Component {
       },
       {
         text: I18n.t("notifications-link-text"),
-        key: 6,
         onClick: () => {
           this.actionSheet.show(() => {
             console.log('callback - show');
@@ -95,7 +103,6 @@ class Profile extends React.Component {
       },
       {
         text: I18n.t("contact-us-button-text"),
-        key: 7,
         onClick: () => Linking.openURL("mailto:tarteel@abdellatif.io")
       },
     ]
@@ -112,6 +119,10 @@ class Profile extends React.Component {
   handleNotificationChange = (value, index, selectedData) => {
     this.props.dispatch(setNotificationIteration(value))
   }
+  handleFontSizeChange = (value, index, selectedData) => {
+    this.props.dispatch(setFontSize(value))
+  }
+  _keyExtractor = (item, index) => index;
   render() {
     const { linksList } = this.state;
     const { ayahsCount } = this.props;
@@ -122,10 +133,20 @@ class Profile extends React.Component {
       return (
           <View style={styles.listItem}>
             <TouchableWithoutFeedback onPress={item.onClick} >
-              <View>
+              <View style={styles.listItemContent}>
                 <Text style={styles.listItemText}>
                   { item.text }
                 </Text>
+                {
+                  item.new ?
+                    <View style={styles.newBadge}>
+                      <Text style={styles.newBadgeText}>
+                        { I18n.t("new-badge-text") }
+                      </Text>
+                    </View>
+                    :
+                    null
+                }
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -178,6 +199,7 @@ class Profile extends React.Component {
           </View>
           <View style={styles.list}>
             <FlatList
+              keyExtractor={this._keyExtractor}
               data={linksList}
               renderItem={({item}) => <ListItem item={item} /> }
             />
@@ -221,31 +243,43 @@ class Profile extends React.Component {
               onPress={this.onItemPress}
           />
         </ActionSheet>
+        <ActionSheet
+          ref={(C) => { this.fontActionSheet = C; }}
+          position="bottom"
+          onChange={this.handleFontSizeChange}
+          defaultValue={this.state.selectedFontSize}
+          multiple={false}
+        >
+          <ActionSheetItem
+            text={` ${ I18n.t("font-size-small-option") }`}
+            value="small"
+            selectedIcon={checkedIcon}
+            onPress={this.onItemPress}
+          />
+          <ActionSheetItem
+            text={` ${ I18n.t("font-size-medium-option") }`}
+            value="medium"
+            selectedIcon={checkedIcon}
+            onPress={this.onItemPress}
+          />
+          <ActionSheetItem
+            text={` ${ I18n.t("font-size-large-option") }`}
+            value="large"
+            selectedIcon={checkedIcon}
+            onPress={this.onItemPress}
+          />
+        </ActionSheet>
       </View>
     )
   }
 }
-
-const ListItem = ({ item }) => {
-  return (
-    <View style={styles.listItem}>
-      <TouchableWithoutFeedback onPress={item.onClick} >
-        <View>
-          <Text style={styles.listItemText}>
-            { item.text }
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    </View>
-  )
-}
-
 
 export default connect(
   state => ({
     ayahsCount: state.ayahs.count,
     demographicData: state.demographicData,
     passedOnBoarding: state.data.passedOnBoarding,
-    notifications: state.data.notifications
+    notifications: state.data.notifications,
+    fontSize: state.data.fontSize,
   })
 )(Profile)

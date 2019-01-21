@@ -23,6 +23,7 @@ import PickAyah from "./src/components/PickAyah";
 import {
   getTotalAyahsCount,
   setContinuous,
+  setFontSize,
   setLocale,
   setNotificationIteration,
   setpassedOnBoarding
@@ -47,13 +48,14 @@ export default class App extends React.Component {
     store.dispatch(getAyahs())
     store.dispatch(getTotalAyahsCount())
     try {
-      let { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous, locale, notifications } =
-        fromPairs(await AsyncStorage.multiGet(["recordsCount", "passedOnBoarding", "passedOnBoardingScreen", "continuous", "locale", "notifications"]))
+      let { recordsCount, passedOnBoarding, passedOnBoardingScreen, continuous, locale, fontSize, notifications } =
+        fromPairs(await AsyncStorage.multiGet(["recordsCount", 'fontSize', "passedOnBoarding", "passedOnBoardingScreen", "continuous", "locale", "notifications"]))
       this.setState({ loading: false, passedOnBoardingScreen })
       store.dispatch(setpassedOnBoarding(passedOnBoarding))
       store.dispatch(setContinuous(continuous))
       store.dispatch(setRecords(Number(recordsCount)))
       store.dispatch(setLocale(locale))
+      store.dispatch(setFontSize(fontSize))
       store.dispatch(setNotificationIteration(notifications))
       store.subscribe(() => {
         let { locale: newLocale } = store.getState().data
