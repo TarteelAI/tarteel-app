@@ -44,6 +44,9 @@ export const ar = {
   "reset-records-link-text": "إستعادة التسجيلات",
   "change-language-link-text": "تغيير اللغه",
   "notifications-link-text": "الإشعارات",
+  "font-size-link-text": "حجم الخط",
+  "evaluate-ayahs-link-text": "تقييم الآيات",
+  "new-badge-text": "جديد",
   "about-link-text": "عن ترتيل",
   "demographic-info-link-text": "بياناتك",
   "mobile-app-link-text": "تطبيق الهاتف",
@@ -82,6 +85,9 @@ export const ar = {
   "notifications-daily-option": "يومياً",
   "notifications-weekly-option": "أسبوعياً",
   "notifications-off-option": "إغلاقً",
+  "font-size-small-option": "صغير",
+  "font-size-medium-option": "متوسط",
+  "font-size-large-option": "كبير",
   "share-tarteel-post-title": "ساعد في تحدي ترتيل 50,000",
 
 

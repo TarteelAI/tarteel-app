@@ -40,7 +40,7 @@ class About extends React.Component {
             <Image  source={require("../../../assets/imgs/Logo.png")} />
           </View>
           <View style={styles.title}>
-            <Text style={styles.ayahsCount}>{ numberWithCommas(totalAyahsCount - 1000) }</Text>
+            <Text style={styles.ayahsCount}>{ numberWithCommas(totalAyahsCount) }</Text>
             <Text style={styles.titleText}>{ I18n.t("about-page-recited-ayahs-text") }</Text>
           </View>
           <View style={styles.textContainer}>

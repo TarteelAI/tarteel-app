@@ -37,6 +37,11 @@ export default (state = initState, action) => {
         ...state,
         notifications: action.value
       })
+    case "SET_FONT_SIZE":
+      return({
+        ...state,
+        fontSize: action.value
+      })
     default:
       return state
   }

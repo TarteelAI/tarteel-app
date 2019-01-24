@@ -47,6 +47,9 @@ export const en = {
   "reset-records-link-text": "Reset records",
   "change-language-link-text": "Change Language",
   "notifications-link-text": "Notifications",
+  "font-size-link-text": "Font Size",
+  "evaluate-ayahs-link-text": "Evaluate Ayahs",
+  "new-badge-text": "New",
   "about-link-text": "About",
   "demographic-info-link-text": "Demographic Data",
   "mobile-app-link-text": "Mobile App",
@@ -85,6 +88,9 @@ export const en = {
   "notifications-daily-option": "Daily",
   "notifications-weekly-option": "Weekly",
   "notifications-off-option": "OFF",
+  "font-size-small-option": "Small",
+  "font-size-medium-option": "Medium",
+  "font-size-large-option": "Large",
   "share-tarteel-post-title": "Help in Tarteel 50,000 challenge",
 
 

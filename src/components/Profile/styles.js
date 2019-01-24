@@ -59,6 +59,19 @@ export default (props) => (
       },
       actionSheetItem: {
         flexDirection: props.locale === "ar" ? "row-reverse" : "row",
+      },
+      listItemContent: {
+        flexDirection: 'row',
+      },
+      newBadge: {
+        backgroundColor: '#DD5953',
+        borderRadius: 5,
+        position: 'absolute',
+        right: 5,
+        padding: 5,
+      },
+      newBadgeText: {
+        color: '#fff'
       }
     })
 )

@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, Animated, Switch, AsyncStorage, Image, TouchableOpacity } from "react-native";
-import Expo from "expo"
+import Expo, { KeepAwake }  from "expo"
 import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
 import { Actions } from "react-native-router-flux"
@@ -86,7 +86,8 @@ class Main extends React.Component {
         prepareToRecordAsync(recordingOptions)
           .then(() => {
             this.recording.startAsync()
-            // You are now recording!
+            // You are now recording!.
+            KeepAwake.activate();
             this.recording.setOnRecordingStatusUpdate(this.onRecordingStatusUpdate)
           })
       } catch (error) {
@@ -112,6 +113,7 @@ class Main extends React.Component {
     }
   }
   handleStopRecording = () => {
+    KeepAwake.deactivate();
     this.recording.stopAndUnloadAsync().then(async () => {
       Expo.Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -385,7 +387,7 @@ class Main extends React.Component {
             <View>
               {
                 !totalAyahsCount ? <Line /> :
-                  <Text style={styles.mainScreenCounter}>{ numberWithCommas(totalAyahsCount - 1000) }</Text>
+                  <Text style={styles.mainScreenCounter}>{ numberWithCommas(totalAyahsCount) }</Text>
               }
             </View>
           </View>
@@ -482,6 +484,7 @@ export default connect(
     preloadedAyahs: state.preloadedAyahs,
     passedOnBoarding: state.data.passedOnBoarding,
     totalAyahsCount: state.data.totalAyahsCount,
+    fontSize: state.data.fontSize,
     continuous: state.data.continuous,
     locale: state.data.locale
   })
