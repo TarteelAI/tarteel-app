@@ -17,19 +17,25 @@ import Steps from "../Steps"
 import RecordingButton from "../RecordingButton"
 
 import { increaseRecords } from "../../store/actions/records"
-import {increaseAyahs, setRandomAyah, setSpecificAyah, setStaticAyah} from "../../store/actions/ayahs"
+import {
+  increaseAyahs,
+  loadNextQueue,
+  loadPrevQueue,
+  setRandomAyah,
+  setSpecificAyah,
+  setStaticAyah,
+  loadNextAyah,
+  loadPreviousAyah,
+  setNextAyah,
+  setPreviousAyah, popPrevAyah, unShiftPrevAyah, shiftNextAyah, popNextAyah, unShiftNextAyah, shiftPrevAyah
+} from "../../store/actions/ayahs"
 import showError from "../../utils/showError"
 import { surahs } from "../PickSurah/surahs";
 
 import stylesFactory from "./styles"
-import {
-  loadNextAyah,
-  loadPreviousAyah,
-  setNextAyah,
-  setPreviousAyah
-} from "../../store/actions/preloadedAyahs";
-import {increaseTotalCount, setContinuous, setpassedOnBoarding} from "../../store/actions";
+import {increaseTotalCount, setContinuous, setpassedOnBoarding, setSessionId} from "../../store/actions";
 import {numberWithCommas, setLastAyah} from "../../utils";
+import {getNextAyah, getPrevAyah} from "../../utils/ayahs";
 
 let isClickedStop = false
 
@@ -149,33 +155,37 @@ class Main extends React.Component {
     try {
       const lastAyah = JSON.parse(await AsyncStorage.getItem("lastAyah"))
       // If it's specific the specific function sets the ayah
-      if(!this.props.currentAyah.surah) {
-        if(!this.props.specific) {
-          if(lastAyah && lastAyah.surah) {
-            this.props.dispatch(setStaticAyah(lastAyah))
-            this.props.dispatch(loadNextAyah())
-            this.props.dispatch(loadPreviousAyah())
+      if (!this.props.currentAyah.surah) {
+        if (!this.props.specific) {
+          if (lastAyah && lastAyah.surah) {
+            this.props.dispatch(setStaticAyah(lastAyah));
           }
-          else
-            this.fetchRandomAyah()
+          else {
+            await this.fetchRandomAyah()
+          }
+          await this.props.dispatch(setSessionId(this.props.currentAyah.session_id));
+          await this.props.dispatch(loadNextAyah());
+          await this.props.dispatch(loadPreviousAyah());
+          await this.props.dispatch(loadNextQueue());
+          await this.props.dispatch(loadPrevQueue());
         }
       }
     }catch (e) {
       showError(e.message)
     }
   }
-  fetchRandomAyah = () => {
-    this.props.dispatch(setRandomAyah())
+  fetchRandomAyah = async () => {
+    await this.props.dispatch(setRandomAyah())
   }
   fetchSpecificAyah = (surah, ayah) => {
     this.props.dispatch(setSpecificAyah(String(surah), String(ayah)))
   }
   uploadAudioAsync = async (uri) =>  {
     const { currentAyah, continuous } = this.props
-    const { surah, ayah, hash, session_id } = currentAyah
-    const recitation_mode = continuous ? "continuous" : "discrete"
+    const { surah, ayah, hash } = currentAyah
+    const recitation_mode = continuous ? "continuous" : "discrete";
     console.log("Uploading " + uri);
-    let apiUrl = 'https://www.tarteel.io/api/recordings/';
+    let apiUrl = 'https://api.tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 
@@ -183,7 +193,7 @@ class Main extends React.Component {
     formData.append('surah_num', surah);
     formData.append('ayah_num', ayah);
     formData.append('hash_string', String(hash));
-    formData.append('session_id', session_id);
+    formData.append('session_id', this.props.sessionId);
     formData.append('recitation_mode', recitation_mode);
     formData.append('file', {
       uri,
@@ -196,6 +206,7 @@ class Main extends React.Component {
       body: formData,
       headers: {
         'Accept': 'application/json',
+        'Cookie': `sessionid=${this.props.sessionId}`,
       },
     };
 
@@ -215,15 +226,15 @@ class Main extends React.Component {
     this.setState({
       sound: {},
       status: {},
-      animateRecordingButton: true
+      animateRecordingButton: true,
     })
-    this.handleRecording()
+    this.handleRecording();
   }
   increaseRecords = () => {
-    this.props.dispatch(increaseRecords())
+    this.props.dispatch(increaseRecords());
   }
   increaseAyahs = () => {
-    this.props.dispatch(increaseAyahs())
+    this.props.dispatch(increaseAyahs());
   }
   handleSubmit = async () => {
     const { recordingsCount, demographicData, passedOnBoarding, dispatch } = this.props
@@ -251,46 +262,40 @@ class Main extends React.Component {
 
     }
     else {
-      this.handleNextAyah()
-      this.resetRecording()
+      this.handleNextAyah();
+      this.resetRecording();
     }
   }
-  handlePreviousAyah = () => {
-    const { previousAyah } = this.props.preloadedAyahs
-    if (previousAyah.surah) {
-      this.props.dispatch(setNextAyah(this.props.currentAyah))
-      this.props.dispatch(setStaticAyah(previousAyah))
-      this.props.dispatch(loadPreviousAyah())
-      setLastAyah(previousAyah)
-    } else  {
-      const { ayah, surah } = this.props.currentAyah
-      const prevAyah = Number(ayah) - 1
-      if(ayah == 1) {
-        const prevSurah = Number(surah) - 1
-        this.fetchSpecificAyah(prevSurah, surahs[prevSurah].ayah)
-      }
-      else
-        this.fetchSpecificAyah(surah, String(prevAyah))
-    }
-  }
-  handleNextAyah = () => {
-    const { nextAyah } = this.props.preloadedAyahs
-    if (nextAyah.surah) {
-      this.props.dispatch(setPreviousAyah(this.props.currentAyah))
-      this.props.dispatch(setStaticAyah(nextAyah))
-      this.props.dispatch(loadNextAyah())
-      setLastAyah(nextAyah)
 
-    } else {
-      const { ayah, surah } = this.props.currentAyah
-      const nextAyah = Number(ayah) + 1
-      if(surahs[surah]["ayah"] == nextAyah - 1) {
-        const nextSurah = Number(surah) + 1
-        this.fetchSpecificAyah(nextSurah, 1)
-      }
-      else
-        this.fetchSpecificAyah(surah, String(nextAyah))
+  handleNextAyah = async () => {
+    const {ayah, surah} = this.props.currentAyah;
+    const {nextSurah, nextAyah} = getNextAyah(surah, ayah);
+
+    await this.props.dispatch(popPrevAyah());
+    await this.props.dispatch(unShiftPrevAyah(this.props.currentAyah));
+
+    if (this.props.nextAyah.length && this.props.nextAyah[0].ayah === nextAyah) {
+      await this.props.dispatch(setStaticAyah(this.props.nextAyah[0]));
     }
+
+    await this.props.dispatch(shiftNextAyah());
+    await this.props.dispatch(loadNextQueue());
+
+  }
+
+  handlePreviousAyah = async () => {
+    const {ayah, surah} = this.props.currentAyah;
+    const {prevSurah, prevAyah} = getPrevAyah(surah, ayah)
+
+    await this.props.dispatch(popNextAyah());
+    await this.props.dispatch(unShiftNextAyah(this.props.currentAyah))
+
+    if (this.props.prevAyah.length && this.props.prevAyah[0].ayah === prevAyah) {
+      await this.props.dispatch(setStaticAyah(this.props.prevAyah[0]));
+    }
+
+    await this.props.dispatch(shiftPrevAyah());
+    this.props.dispatch(loadPrevQueue());
   }
   handleContinuousNext = () => {
     const { continuous } = this.props
@@ -352,7 +357,7 @@ class Main extends React.Component {
   }
   render() {
     const { status, animateRecordingButton } = this.state
-    const { currentAyah, passedOnBoarding, totalAyahsCount, continuous } = this.props
+    const { currentAyah, passedOnBoarding, totalAyahsCount, continuous, isLoadingAyah } = this.props
     const { isRecording, isDoneRecording } = status
     const styles = stylesFactory(this.props)
     const kFormatter = num => num > 999 ? (num/1000).toFixed(1) + 'k' : num
@@ -395,7 +400,7 @@ class Main extends React.Component {
         <View style={[styles.container, { marginTop: 25 }]}>
           <View style={styles.ayahWrapper}>
             {
-              !currentAyah.line ? <Loader /> :
+              !currentAyah.line || isLoadingAyah ? <Loader /> :
                 <Text style={styles.ayahText}>{ currentAyah.line }</Text>
             }
             {
@@ -475,17 +480,23 @@ class Main extends React.Component {
 }
 
 
-
-export default connect(
-  state => ({
+const mapStateToProps = (state) => {
+  return {
     recordingsCount: state.records.count,
     demographicData: state.demographicData,
     currentAyah: state.ayahs.currentAyah,
-    preloadedAyahs: state.preloadedAyahs,
+    nextAyah: state.ayahs.nextAyah,
+    prevAyah: state.ayahs.prevAyah,
+    isLoadingAyah: state.ayahs.isLoadingAyah,
     passedOnBoarding: state.data.passedOnBoarding,
     totalAyahsCount: state.data.totalAyahsCount,
     fontSize: state.data.fontSize,
     continuous: state.data.continuous,
-    locale: state.data.locale
-  })
+    locale: state.data.locale,
+    sessionId: state.data.sessionId,
+  }
+}
+
+export default connect(
+  mapStateToProps,
 )(Main)

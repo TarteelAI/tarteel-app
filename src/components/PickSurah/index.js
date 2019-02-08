@@ -8,7 +8,7 @@ import I18n from "ex-react-native-i18n"
 import Button from "../Button";
 import Navbar from "../Navbar";
 import StatusBar from "../StatusBar"
-import { surahs } from "./surahs";
+import surahs from "./surahs";
 import styles from "./styles"
 
 export default class PickSurah extends React.Component {

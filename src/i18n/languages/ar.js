@@ -46,6 +46,7 @@ export const ar = {
   "notifications-link-text": "الإشعارات",
   "font-size-link-text": "حجم الخط",
   "evaluate-ayahs-link-text": "تقييم الآيات",
+  "ayah-recognition-link-text": "تعرف علي الآيات",
   "new-badge-text": "جديد",
   "about-link-text": "عن ترتيل",
   "demographic-info-link-text": "بياناتك",

@@ -21,6 +21,7 @@ import ChangeAyah from "./src/components/ChangeAyah";
 import PickSurah from "./src/components/PickSurah";
 import PickAyah from "./src/components/PickAyah";
 import {
+  getSessionId,
   getTotalAyahsCount,
   setContinuous,
   setFontSize,
@@ -44,6 +45,7 @@ export default class App extends React.Component {
     });
     await I18n.initAsync();
     bindNotifications();
+    store.dispatch(getSessionId())
     store.dispatch(getDemographicData())
     store.dispatch(getAyahs())
     store.dispatch(getTotalAyahsCount())

@@ -49,6 +49,7 @@ export const en = {
   "notifications-link-text": "Notifications",
   "font-size-link-text": "Font Size",
   "evaluate-ayahs-link-text": "Evaluate Ayahs",
+  "ayah-recognition-link-text": "Ayah recognition",
   "new-badge-text": "New",
   "about-link-text": "About",
   "demographic-info-link-text": "Demographic Data",

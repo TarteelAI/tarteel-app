@@ -11,9 +11,15 @@ import Navbar from "../Navbar";
 import StatusBar from "../StatusBar"
 import { ayahsDict } from "./ayahs";
 import styles from "./styles"
-import {surahs} from "../PickSurah/surahs";
-import {setSpecificAyah} from "../../store/actions/ayahs";
-import {loadNextAyah, loadPreviousAyah} from "../../store/actions/preloadedAyahs";
+import surahs from "../PickSurah/surahs";
+import {
+  clearNextAyah,
+  clearPrevAyah,
+  loadNextAyah,
+  loadNextQueue,
+  loadPreviousAyah, loadPrevQueue,
+  setSpecificAyah, toggleLoadingAyah
+} from "../../store/actions/ayahs";
 
 const { height, width } = Dimensions.get("window")
 
@@ -25,15 +31,23 @@ class PickAyah extends React.Component {
   state = {
     searchText: ''
   };
-  handleSelectAyah = (surah, ayah) => {
-    this.props.dispatch(setSpecificAyah(surah, ayah))
-    Actions.home({ specific: true })
+  handleSelectAyah = async (surah, ayah) => {
+    this.props.dispatch(toggleLoadingAyah());
+    await this.props.dispatch(setSpecificAyah(surah, ayah));
+    Actions.home({ specific: true });
+    await this.props.dispatch(clearNextAyah());
+    await this.props.dispatch(clearPrevAyah());
+    await this.props.dispatch(loadNextAyah());
+    await this.props.dispatch(loadPreviousAyah());
+    this.props.dispatch(toggleLoadingAyah());
+    await this.props.dispatch(loadNextQueue());
+    await this.props.dispatch(loadPrevQueue());
   }
   render() {
     const { searchText } = this.state
-    let { currentSurah, currentAyah } = this.props // that is just for development
-    currentSurah = currentSurah || currentAyah.surah
-    const ayahs = ayahsDict[currentSurah]
+    let { currentSurah, currentAyah } = this.props; // that is just for development
+    currentSurah = currentSurah || currentAyah.surah;
+    const ayahs = ayahsDict[String(currentSurah)];
     const ListItem = ({item}) => {
       return (
         <View style={styles.listItem} key={item}>

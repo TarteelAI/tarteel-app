@@ -30,6 +30,7 @@ export default class Footer extends React.Component {
       duration: 500,
     });
     this.fadeAnimation.start();
+
   }
   render() {
     const { fadeAnim, isLoading } = this.state

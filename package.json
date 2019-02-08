@@ -11,6 +11,7 @@
   "dependencies": {
     "ex-react-native-i18n": "^0.0.4",
     "expo": "^29.0.0",
+    "lodash": "^4.17.11",
     "lodash.frompairs": "^4.0.1",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-29.0.0.tar.gz",

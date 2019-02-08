@@ -42,6 +42,11 @@ export default (state = initState, action) => {
         ...state,
         fontSize: action.value
       })
+    case "SET_SESSION_ID":
+      return ({
+        ...state,
+        sessionId: action.payload,
+      });
     default:
       return state
   }

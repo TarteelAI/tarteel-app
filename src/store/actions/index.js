@@ -9,6 +9,8 @@ import I18n from "ex-react-native-i18n";
 import App from "../../../App"
 import {bindNotifications} from "../../utils/notification";
 
+const API_URL = 'https://api.tarteel.io';
+
 export const restoreRecords = () => {
   return (dispatch, getState) => {
     try {
@@ -29,7 +31,14 @@ export const restoreRecords = () => {
 
 export const getTotalAyahsCount = () => {
   return (dispatch, getState) => {
-    fetch("https://www.tarteel.io/get_total_count/")
+    const sessionId = getState().data.sessionId;
+
+    return fetch(`${API_URL}/get_total_count/?format=json`, {
+      headers: {
+        "Content-Type": "application/json",
+        'Cookie': `sessionid=${sessionId}`,
+      }
+    })
       .then(res => res.json())
       .then(json => {
         dispatch({
@@ -117,6 +126,37 @@ export const setFontSize = value => {
             value
           })
       }
+    } catch (e) {
+      showError(e.message);
+    }
+  }
+}
+
+
+export const setSessionId = (sessionId) => {
+  return (dispatch, getState) => {
+    try {
+      if (sessionId) {
+        AsyncStorage.setItem("sessionId", sessionId),
+          dispatch({
+            type: "SET_SESSION_ID",
+            payload: sessionId
+          })
+      }
+    } catch (e) {
+      showError(e.message);
+    }
+  }
+}
+
+export const getSessionId = () => {
+  return async (dispatch, getState) => {
+    try {
+      const sessionId = await AsyncStorage.getItem("sessionId");
+        dispatch({
+          type: "SET_SESSION_ID",
+          payload: sessionId
+        })
     } catch (e) {
       showError(e.message);
     }

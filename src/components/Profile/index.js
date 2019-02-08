@@ -37,16 +37,21 @@ class Profile extends React.Component {
         onClick: () => Actions.demographicForm()
       },
       {
+        text: I18n.t("ayah-recognition-link-text"),
+        new: true,
+        onClick: () => Linking.openURL("https://www.tarteel.io/recognition"),
+      },
+      {
+        text: I18n.t("evaluate-ayahs-link-text"),
+        new: true,
+        onClick: () => Linking.openURL("https://www.tarteel.io/evaluator")
+      },
+      {
         text: I18n.t("font-size-link-text"),
         new: true,
         onClick: () => {
           this.fontActionSheet.show()
         }
-      },
-      {
-        text: I18n.t("evaluate-ayahs-link-text"),
-        new: true,
-        onClick: () => Linking.openURL("https://www.tarteel.io/evaluation/evaluator")
       },
       {
         text: I18n.t("share-tarteel-link-text"),
