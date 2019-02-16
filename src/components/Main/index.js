@@ -1,6 +1,6 @@
 import React from "react"
 import { View, Text, Animated, Switch, AsyncStorage, Image, TouchableOpacity } from "react-native";
-import Expo, { KeepAwake }  from "expo"
+import { KeepAwake, Permissions, Audio }  from "expo"
 import { MaterialCommunityIcons, MaterialIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import { connect }  from "react-redux"
 import { Actions } from "react-native-router-flux"
@@ -51,7 +51,6 @@ class Main extends React.Component {
     animateRecordingButton: false,
   }
   alertIfRemoteNotificationsDisabledAsync = async () => {
-    const { Permissions } = Expo;
     const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
     if (status !== 'granted') {
       alert('Hey! You might want to enable Audio for my app, they are good.');
@@ -62,7 +61,7 @@ class Main extends React.Component {
     const recordingOptions = {
       ios: {
         extension: ".wav",
-        audioQuality: Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+        audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
@@ -72,21 +71,22 @@ class Main extends React.Component {
       },
       android: {
         extension: ".wav",
-        outputFormat: Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-        audioEncoder: Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+        outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+        audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
       }
     }
-    Expo.Audio.setAudioModeAsync({
+    Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
-      interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
-      interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
     }).then( async () => {
-      this.recording = new Expo.Audio.Recording();
+      this.recording = new Audio.Recording();
       try {
         this.recording.
         prepareToRecordAsync(recordingOptions)
@@ -121,15 +121,16 @@ class Main extends React.Component {
   handleStopRecording = () => {
     KeepAwake.deactivate();
     this.recording.stopAndUnloadAsync().then(async () => {
-      Expo.Audio.setAudioModeAsync({
+      Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
-        interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
         playsInSilentModeIOS: true,
         playsInSilentLockedModeIOS: true,
         shouldDuckAndroid: true,
-        interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+        playThroughEarpieceAndroid: true,
+        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       }).then(() => {
-        this.recording.createNewLoadedSound()
+        this.recording.createNewLoadedSoundAsync()
           .then(async ({sound, status}) => {
           try {
             this.setState({
@@ -301,13 +302,14 @@ class Main extends React.Component {
     const { continuous } = this.props
     if(continuous) {
       this.recording.stopAndUnloadAsync().then(async () => {
-        Expo.Audio.setAudioModeAsync({
+        Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
-          interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
           playsInSilentModeIOS: true,
           playsInSilentLockedModeIOS: true,
           shouldDuckAndroid: true,
-          interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          playThroughEarpieceAndroid: true,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
         }).then(() => {
           this.justUploadTheFile(true)
         })
@@ -323,7 +325,7 @@ class Main extends React.Component {
         animateRecordingButton: false
       })
     }
-    this.recording.createNewLoadedSound()
+    this.recording.createNewLoadedSoundAsync()
       .then(async ({sound, status}) => {
         try {
           let uri = await this.recording.getURI();
@@ -468,7 +470,7 @@ class Main extends React.Component {
               <Switch
                 value={Boolean(continuous)}
                 onValueChange={this.handleSwitchChange}
-                onTintColor={"#408F84"}
+                trackColor={{true: "#408F84", false: null}}
               />
               <Text style={styles.continuousSwitchText}>{ I18n.t('continuous-mode-note-text') }</Text>
             </View>

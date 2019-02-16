@@ -3,7 +3,7 @@ import Swiper from 'react-native-swiper';
 import {View, Text, StatusBar, Image, Linking} from "react-native"
 import { Actions } from "react-native-router-flux"
 import { connect }  from "react-redux"
-import Expo from "expo";
+import { Permissions } from "expo";
 import I18n from "ex-react-native-i18n"
 
 import Button from "../Button"
@@ -46,7 +46,6 @@ class OnBoarding extends React.Component {
     }
   }
   alertIfRemoteNotificationsDisabledAsync = async (cb) => {
-    const { Permissions } = Expo;
     const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
     if (status !== 'granted') {
       alert('Hey! You might want to enable Audio for my app, they are good.');

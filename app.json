@@ -4,9 +4,9 @@
     "description": "Thank you for helping us build the world's first public, open-source dataset of Quran recitations by ordinary people, like you and me. Tarteel is an initiative to encourage machine learning applications based on recitations of the Quran.",
     "slug": "tarteel",
     "privacy": "public",
-    "sdkVersion": "29.0.0",
+    "sdkVersion": "32.0.0",
     "platforms": ["ios", "android"],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
