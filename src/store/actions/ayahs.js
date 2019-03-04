@@ -4,7 +4,7 @@ import showError from "../../utils/showError";
 import {surahs} from "../../components/PickSurah/surahs";
 import {getNextAyah, getPrevAyah} from "../../utils/ayahs";
 
-const API_URL = 'https://api.tarteel.io';
+const API_URL = 'https://apiv1.tarteel.io';
 
 export const setAyahs = (val) => {
   return async (dispatch, getState) => {

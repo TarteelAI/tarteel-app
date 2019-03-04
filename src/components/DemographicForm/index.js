@@ -72,7 +72,7 @@ class DemographicForm extends React.Component {
     const { age, gender, cca2:ethnicity , qiraah} = this.state
     const data = { age, gender, ethnicity, qiraah, platform: Platform.OS , session_id: currentAyah.session_id}
     this.setState({ showSpinner: true });
-    fetch("https://api.tarteel.io/api/demographics/", {
+    fetch("https://apiv1.tarteel.io/api/demographics/", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {

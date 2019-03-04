@@ -186,7 +186,7 @@ class Main extends React.Component {
     const { surah, ayah, hash } = currentAyah
     const recitation_mode = continuous ? "continuous" : "discrete";
     console.log("Uploading " + uri);
-    let apiUrl = 'https://api.tarteel.io/api/recordings/';
+    let apiUrl = 'https://apiv1.tarteel.io/api/recordings/';
     let uriParts = uri.split('.');
     let fileType = uriParts[uriParts.length - 1];
 

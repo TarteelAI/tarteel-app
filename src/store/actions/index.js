@@ -9,7 +9,7 @@ import I18n from "ex-react-native-i18n";
 import App from "../../../App"
 import {bindNotifications} from "../../utils/notification";
 
-const API_URL = 'https://api.tarteel.io';
+const API_URL = 'https://apiv1.tarteel.io';
 
 export const restoreRecords = () => {
   return (dispatch, getState) => {
