@@ -12,6 +12,7 @@ import { getDemographicData } from "./src/store/actions/demographicData";
 
 import Main from "./src/components/Main"
 import OnBoarding from "./src/components/OnBoarding"
+import WaitList from "./src/components/WaitList"
 import Demographic from "./src/components/Demographic"
 import About from "./src/components/About"
 import DemographicForm from "./src/components/DemographicForm";
@@ -84,8 +85,9 @@ export default class App extends React.Component {
       <Provider store={store}>
         <Router>
           <Stack key="root" hideNavBar>
-            <Scene initial={!passedOnBoardingScreen} key="onBoarding" component={OnBoarding}/>
-            <Scene initial={passedOnBoardingScreen} key="home" component={Main}/>
+            <Scene initial key="waitList" component={WaitList}/>
+            {/* <Scene initial={!passedOnBoardingScreen} key="onBoarding" component={OnBoarding}/>
+            <Scene initial={passedOnBoardingScreen} key="home" component={Main}/> */}
             <Scene key="demographic" component={Demographic} />
             <Scene key="demographicForm" component={DemographicForm} />
             <Scene key="profile" component={Profile} />

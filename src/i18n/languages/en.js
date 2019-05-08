@@ -2,6 +2,13 @@ import {Text} from "react-native";
 import React from "react";
 
 export const en = {
+  "waitList-submit-button": "Get Early Access",
+  "waitList-first-screen-title": "Tarteel",
+  "waitList-first-screen-text": "AI for recitation correction, just recite to identify mistakes in your recitation",
+  "waitList-congrats": "Congrats! You're on the waitlist!",
+  "waitList-set": "You're All Set",
+  "waitList-permission": "We need app permission to notify you when you're ready to start matching.",
+  "waitList-notify": "We'll Notify you once it's your turn to try Tarteel",
   "onboarding-first-screen-title": "Welcome to Tarteel",
   "onboarding-first-screen-text": "Thank you for helping us build the world's first public, open-source dataset of Quran recitations by ordinary people, like you and me. Tarteel is an initiative to encourage machine learning applications based on recitations of the Quran (such as hifz correction).",
   "onboarding-first-screen-button-text": "Next",
