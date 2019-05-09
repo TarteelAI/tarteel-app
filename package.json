@@ -7,11 +7,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "ex-react-native-i18n": "^0.0.5",
     "expo": "^32.0.0",
-    "react": "16.5.0",
     "lodash": "^4.17.11",
     "lodash.frompairs": "^4.0.1",
-    "ex-react-native-i18n": "^0.0.5",
+    "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-action-sheet-component": "^0.0.36",
     "react-native-country-picker-modal": "^0.6.2",

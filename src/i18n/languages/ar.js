@@ -1,4 +1,9 @@
 export const ar = {
+  "waitList-submit-button": "احصل على تسجيل مبكر",
+  "waitList-first-screen-title": "ترتيل",
+  "waitList-first-screen-text": "نستخدم الذكاء الاصطناعى لتصحيح التلاوة ، فقط أقرأ لتحديد الأخطاء في تلاوتك",
+  "waitList-congrats": "مبارك, انت الان فى قائمة الانتظار",
+  "waitList-permision": "نحتاج الى اذن تفعيل الاشعارات لتنبيهك عندما يكون التطبيق جاهز",
   "onboarding-first-screen-title": "أهلاً بك في ترتيل",
   "onboarding-first-screen-text": "شكراً لمساعدتنا في بناء أول مجموعة بيانات عامه مفتوحة المصدر لتلاوات القرآن الكريم من قبل أشخاص عاديين ، مثلك ومثلي. ترتيل هي مبادرة لتشجيع تطبيقات التعلم الآلي على أساس تلاوات القرآن (مثل تصحيح التلاوه).",
   "onboarding-first-screen-button-text": "التالي",
